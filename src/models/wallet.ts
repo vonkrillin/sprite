@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document, Types } from "mongoose";
+import { Document, Types, Schema as MongooseSchema } from "mongoose";
 import { WalletCurrencyEnum, WalletProviderEnum, WalletStatusEnum } from "../enums";
 
 
@@ -35,10 +35,10 @@ export class Wallet extends Document {
     @Prop({ required: false })
     privateKeyEncrypted?: string;
 
-    @Prop({ required: false, default: null })
+    @Prop({ required: false, default: null, type: String })
     mnemonicEncrypted?: string | null;
 
-    @Prop({ required: false })
+    @Prop({ required: false, type: MongooseSchema.Types.Mixed })
     metadata?: Record<string, any>;
 }
 

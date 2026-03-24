@@ -29,3 +29,16 @@ export enum TransactionTypeEnum {
     DEBIT = "DEBIT",
     CREDIT = "CREDIT",
 }
+
+export enum PaymentStatusEnum {
+    PENDING = "PENDING",
+    COMPLETED = "COMPLETED",
+    FAILED = "FAILED",
+}
+
+export enum PaymentProviderEnum {
+    BASE = "BASE",
+    INTERSWITCH = "INTERSWITCH",
+    // todo: add other crypto providers 
+    // when payment wallets are implemented
+}

@@ -20,12 +20,11 @@ export class WalletsService {
         return this.walletProviderFactory.createWalletProvider(provider);
     }
 
-    async createWallet(data: { organizationId: string, currency: string, provider: WalletProviderEnum }) {
+    async createWallet(data: { organizationId: string, provider: WalletProviderEnum }) {
         const organizationId = new Types.ObjectId(data.organizationId);
         const walletProvider = await this.getWalletProvider(data.provider);
         const existingWallet = await this.getWallet({
             organizationId: data.organizationId,
-            currency: data.currency,
             provider: data.provider,
         });
 
@@ -37,7 +36,7 @@ export class WalletsService {
         
         return await this.walletModel.create({
             organization: organizationId,
-            currency: data.currency,
+            currency: cryptoWallet.currency,
             provider: data.provider,
             status: cryptoWallet.status,
             balance: 0,
@@ -48,12 +47,13 @@ export class WalletsService {
     }
 
     async getWallet(data: {
-        organizationId: string, currency: string,
+        organizationId: string, 
+        // currency: string,
         provider: WalletProviderEnum, status?: WalletStatusEnum
     }): Promise<Wallet | null> {
         return this.walletModel.findOne({
             organization: new Types.ObjectId(data.organizationId),
-            currency: data.currency,
+            // currency: data.currency,
             provider: data.provider,
             ...(data.status && { status: data.status }),
         });

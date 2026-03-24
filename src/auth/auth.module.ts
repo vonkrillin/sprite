@@ -5,7 +5,10 @@ import { OrganizationService } from 'src/organization/organization.service';
 import { JwtService } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Organization, OrganizationSchema } from 'src/models/organization';
+import { JWTAuthGuard } from './auth.guard';
+import { Global } from '@nestjs/common';
 
+@Global()
 @Module({
   imports: [
     MongooseModule.forFeature([
@@ -13,6 +16,7 @@ import { Organization, OrganizationSchema } from 'src/models/organization';
     ]),
   ],
   controllers: [AuthController],
-  providers: [AuthService, OrganizationService, JwtService],
+  providers: [AuthService, OrganizationService, JwtService, JWTAuthGuard],
+  exports: [JWTAuthGuard, JwtService],
 })
 export class AuthModule {}
