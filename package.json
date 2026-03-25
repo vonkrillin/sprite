@@ -28,6 +28,7 @@
     "@nestjs/platform-express": "^11.0.1",
     "@types/bcrypt": "^6.0.0",
     "algosdk": "^3.5.2",
+    "axios": "^1.13.6",
     "bcrypt": "^6.0.0",
     "mongoose": "^9.3.2",
     "nestjs-zod": "^5.2.1",

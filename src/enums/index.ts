@@ -17,6 +17,7 @@ export enum WalletCurrencyEnum {
     USDT = "USDT",
     ALGO = "ALGO",
     TRX = "TRX",
+    NGN = "NGN",
 }
 
 export enum TransactionStatusEnum {
