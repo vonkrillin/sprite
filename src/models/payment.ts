@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document, Types } from "mongoose";
-import { WalletCurrencyEnum, PaymentStatusEnum } from "../enums";
+import { Document, Types, Schema as MongooseSchema } from "mongoose";
+import { WalletCurrencyEnum, PaymentStatusEnum, PaymentProviderEnum } from "../enums";
 
 
 @Schema()
@@ -20,8 +20,24 @@ export class IPaymentRequestCheckoutData {
     @Prop({ required: true })
     price: number;
 
-    @Prop({ required: true, enum: Object.values(WalletCurrencyEnum) })
-    currency: WalletCurrencyEnum;
+    @Prop({ required: false, type: MongooseSchema.Types.Mixed })
+    metadata?: Record<string, any>;
+}
+
+
+@Schema()
+export class PaymentRequestCustomer {
+    @Prop({ required: false })
+    customerId?: string;
+
+    @Prop({ required: false })
+    name?: string;
+
+    @Prop({ required: true })
+    email: string;
+
+    @Prop({ required: false })
+    phone?: string;
 }
 
 
@@ -39,8 +55,8 @@ export class PaymentRequest extends Document {
     @Prop({ required: true, enum: Object.values(WalletCurrencyEnum) })
     currency: WalletCurrencyEnum;
 
-    @Prop({ required: true, type: Types.ObjectId, ref: 'Wallet' })
-    receiverWallet: Types.ObjectId;
+    @Prop({ required: false, type: Types.ObjectId, ref: 'Wallet' })
+    receiverWallet?: Types.ObjectId;
 
     @Prop({ required: false })
     senderWalletAddress?: string;
@@ -59,6 +75,12 @@ export class PaymentRequest extends Document {
 
     @Prop({ required: false, type: Array<IPaymentRequestCheckoutData> })
     checkoutData?: IPaymentRequestCheckoutData[];
+
+    @Prop({ required: true, enum: Object.values(PaymentProviderEnum) })
+    allowedPaymentProviders: PaymentProviderEnum[];
+
+    @Prop({ required: true, type: PaymentRequestCustomer })
+    customer: PaymentRequestCustomer;
 
     @Prop({ required: true })
     expiresAt: Date;
