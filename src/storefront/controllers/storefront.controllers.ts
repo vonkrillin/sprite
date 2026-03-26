@@ -48,7 +48,6 @@ export class StorefrontController {
         .pipe(csv())
         .on('data', (data) => {
           const validatedRow = csvProductSchema.safeParse(data);
-          console.log(data, 'test');
           if (validatedRow.success) {
             results.push(validatedRow.data);
           } else {
