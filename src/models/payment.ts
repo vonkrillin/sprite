@@ -5,7 +5,7 @@ import { WalletCurrencyEnum, PaymentStatusEnum, PaymentProviderEnum } from "../e
 
 @Schema()
 export class IPaymentRequestCheckoutData {
-    @Prop({ required: false, default: null })
+    @Prop({ required: false, default: null, type: String })
     image: string | null;
 
     @Prop({ required: true })
@@ -52,8 +52,8 @@ export class PaymentRequest extends Document {
     @Prop({ required: true })
     amount: number;
 
-    @Prop({ required: true, enum: Object.values(WalletCurrencyEnum) })
-    currency: WalletCurrencyEnum;
+    @Prop({ required: true, enum: Object.values(WalletCurrencyEnum), type: Array<WalletCurrencyEnum> })
+    supportedCurrencies: WalletCurrencyEnum[];
 
     @Prop({ required: false, type: Types.ObjectId, ref: 'Wallet' })
     receiverWallet?: Types.ObjectId;
@@ -67,7 +67,7 @@ export class PaymentRequest extends Document {
     @Prop({ required: false })
     transactionId?: string;
 
-    @Prop({ required: false })
+    @Prop({ required: false, type: MongooseSchema.Types.Mixed })
     metadata?: Record<string, any>;
 
     @Prop({ required: true, enum: Object.values(PaymentStatusEnum), default: PaymentStatusEnum.PENDING })
@@ -76,7 +76,7 @@ export class PaymentRequest extends Document {
     @Prop({ required: false, type: Array<IPaymentRequestCheckoutData> })
     checkoutData?: IPaymentRequestCheckoutData[];
 
-    @Prop({ required: true, enum: Object.values(PaymentProviderEnum) })
+    @Prop({ required: true, enum: Object.values(PaymentProviderEnum), type: Array<PaymentProviderEnum> })
     allowedPaymentProviders: PaymentProviderEnum[];
 
     @Prop({ required: true, type: PaymentRequestCustomer })
@@ -84,6 +84,12 @@ export class PaymentRequest extends Document {
 
     @Prop({ required: true })
     expiresAt: Date;
+
+    @Prop({ required: false })
+    paymentUrl?: string;
+
+    @Prop({ required: false, type: MongooseSchema.Types.Mixed })
+    providerPaymentUrls?: Record<PaymentProviderEnum, string>;
 }
 
 export const PaymentRequestSchema = SchemaFactory.createForClass(PaymentRequest);

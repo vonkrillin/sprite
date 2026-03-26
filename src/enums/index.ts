@@ -40,6 +40,7 @@ export enum PaymentStatusEnum {
 export enum PaymentProviderEnum {
     BASE = "BASE",
     INTERSWITCH = "INTERSWITCH",
+    SPRITE = "SPRITE"
     // todo: add other crypto providers 
     // when payment wallets are implemented
 }

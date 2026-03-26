@@ -1,7 +1,6 @@
 import { Injectable, NotImplementedException } from "@nestjs/common";
 import { IPaymentProvider } from "./payment-provider.interface";
-import { 
-    GeneratePaymentLinkInput, 
+import {
     VerifyPaymentInput,
     GeneratePaymentLinkOutput,
     VerifyPaymentOutput
@@ -9,12 +8,14 @@ import {
 import { ConfigService } from "@nestjs/config";
 import axios from "axios";
 import { WalletCurrencyEnum } from "../../enums";
+import { CreatePaymentRequestDto } from "../dtos/create-payment.dto";
 
 @Injectable()
 export class InterswitchPaymentProvider implements IPaymentProvider {
     private clientId: string;
     private clientSecret: string;
     private merchantCode: string;
+    private payableCode: string;
     private encodedCredentials: string;
     private accessToken: string;
     private tokenExpiry: Date;
@@ -24,6 +25,7 @@ export class InterswitchPaymentProvider implements IPaymentProvider {
         this.clientId = this.configService.get<string>('INTERSWITCH_CLIENT_ID')!;
         this.clientSecret = this.configService.get<string>('INTERSWITCH_CLIENT_SECRET')!;
         this.merchantCode = this.configService.get<string>('INTERSWITCH_MERCHANT_CODE')!;
+        this.payableCode = this.configService.get<string>('INTERSWITCH_PAYABLE_CODE')!;
         this.encodedCredentials = this.encodeCredentials();
         this.baseUrl = this.configService.get<string>('INTERSWITCH_BASE_URL')!;
     }
@@ -52,13 +54,13 @@ export class InterswitchPaymentProvider implements IPaymentProvider {
         this.tokenExpiry = new Date(Date.now() + response.data.expires_in * 1000);
     }
 
-    async generatePaymentLink(data: GeneratePaymentLinkInput): Promise<GeneratePaymentLinkOutput> {
+    async generatePaymentLink(data: CreatePaymentRequestDto): Promise<GeneratePaymentLinkOutput> {
         await this.generateAccessToken();
         const payload = {
             merchantCode: this.merchantCode,
             amount: data.amount,
             currencyCode: 566, // NGN payments
-            payableCode: data.paymentReference,
+            payableCode: this.payableCode,
             transactionReference: data.paymentReference,
             customerId: data.customer?.email,
             customerEmail: data.customer?.email,
@@ -74,7 +76,7 @@ export class InterswitchPaymentProvider implements IPaymentProvider {
 
         return {
             amount: data.amount,
-            currency: WalletCurrencyEnum.NGN,
+            supportedCurrencies: [WalletCurrencyEnum.NGN],
             paymentReference: response.data.transactionReference,
             paymentUrl: response.data.paymentUrl,
             status: response.data.status,
