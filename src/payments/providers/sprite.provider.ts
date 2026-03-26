@@ -3,19 +3,28 @@ import { IPaymentProvider } from "./payment-provider.interface";
 import { 
     VerifyPaymentInput,
     GeneratePaymentLinkOutput,
-    VerifyPaymentOutput
+    VerifyPaymentOutput,
+    PaymentChannelInterface
 } from "./payment-provider-input.interface";
-import { WalletCurrencyEnum, PaymentStatusEnum } from "../../enums";
+import { WalletCurrencyEnum, PaymentStatusEnum, WalletProviderEnum, PaymentChannelTypeEnum } from "../../enums";
 import { ConfigService } from "@nestjs/config";
 import { CreatePaymentRequestDto } from "../dtos/create-payment.dto";
+import { WalletsService } from "../../wallets/wallets.service";
+import { InterswitchPaymentProvider } from "./interswitch.provider";
 
 @Injectable()
 export class SpritePaymentProvider implements IPaymentProvider {
-    constructor(private readonly configService: ConfigService) {}
+    constructor(
+        private readonly configService: ConfigService,
+        private readonly walletsService: WalletsService,
+        private readonly interswitchPaymentProvider: InterswitchPaymentProvider,
+    ) {}
 
     private _supportedCurrencies = [
         WalletCurrencyEnum.NGN,
         WalletCurrencyEnum.USDC,
+        WalletCurrencyEnum.ALGO,
+        WalletCurrencyEnum.TRX,
     ]
 
     private generateReference() {
@@ -29,15 +38,67 @@ export class SpritePaymentProvider implements IPaymentProvider {
         }
 
         const baseUrl = feUrl.endsWith('/') ? feUrl.slice(0, -1) : feUrl;
-        const paymentUrl = `${baseUrl}/payments/${data.paymentReference}`;
+        const paymentReference = data.paymentReference || this.generateReference();
+        const paymentUrl = `${baseUrl}/payments/${paymentReference}`;
+
+        const paymentChannels: PaymentChannelInterface[] = [];
+
+        const supportedCurrencies = this._supportedCurrencies.filter((currency) => {
+            return data.supportedCurrencies.includes(currency);
+        });
+
+        // Hard Separation for NGN Channel
+        if (supportedCurrencies.includes(WalletCurrencyEnum.NGN)) {
+            const interswitchPaymentLink = await this.interswitchPaymentProvider.generatePaymentLink({
+                ...data,
+                paymentReference,
+                amount: data.amount * 100,
+            });
+            paymentChannels.push({
+                type: PaymentChannelTypeEnum.PAYMENT_LINK,
+                currency: WalletCurrencyEnum.NGN,
+                link: interswitchPaymentLink.paymentUrl, // Sprite internal hosted checkout page for NGN
+            });
+        }
+
+        // Mapping for Crypto Channels
+        const cryptoMappings = [
+            { currency: WalletCurrencyEnum.USDC, provider: WalletProviderEnum.BASE },
+            { currency: WalletCurrencyEnum.ALGO, provider: WalletProviderEnum.ALGORAND },
+            { currency: WalletCurrencyEnum.TRX, provider: WalletProviderEnum.TRON },
+        ];
+
+        // Process Crypto Channels Gracefully
+        for (const mapping of cryptoMappings) {
+            if (supportedCurrencies.includes(mapping.currency)) {
+                try {
+                    const wallet = await this.walletsService.createPaymentWallet({
+                        paymentReference,
+                        currency: mapping.currency,
+                        provider: mapping.provider,
+                    });
+
+                    paymentChannels.push({
+                        type: PaymentChannelTypeEnum.WALLET_ADDRESS,
+                        currency: mapping.currency,
+                        provider: mapping.provider,
+                        address: wallet.address,
+                    });
+                } catch (error) {
+                    console.error(`Failed to activate ${mapping.currency} channel on ${mapping.provider}`, error);
+                    // Continue to next available channel
+                }
+            }
+        }
 
         return {
             amount: data.amount,
-            supportedCurrencies: this._supportedCurrencies,
-            paymentReference: data.paymentReference || this.generateReference(),
+            supportedCurrencies,
+            paymentReference,
             paymentUrl: paymentUrl,
             status: PaymentStatusEnum.PENDING,
             metadata: data.metadata,
+            paymentChannels,
         };
     }
 

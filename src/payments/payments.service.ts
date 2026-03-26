@@ -4,14 +4,12 @@ import { SpritePaymentProvider } from "./providers/sprite.provider";
 import { Model, Types } from "mongoose";
 import { PaymentRequest } from "../models/payment";
 import { InjectModel } from "@nestjs/mongoose";
-import { PaymentProviderEnum, PaymentStatusEnum } from "../enums";
-import { InterswitchPaymentProvider } from "./providers/interswitch.provider";
+import { PaymentStatusEnum } from "../enums";
 
 @Injectable()
 export class PaymentsService {
     constructor(
         private readonly spritePaymentProvider: SpritePaymentProvider,
-        private readonly interswitchPaymentProvider: InterswitchPaymentProvider,
         @InjectModel(PaymentRequest.name) private readonly paymentRequestModel: Model<PaymentRequest>,
     ) { }
 
@@ -36,26 +34,16 @@ export class PaymentsService {
             paymentReference,
         });
 
-        const providerPaymentUrls: Record<PaymentProviderEnum, string | undefined> = {
-            [PaymentProviderEnum.SPRITE]: paymentLink.paymentUrl,
-            [PaymentProviderEnum.INTERSWITCH]: (await this.interswitchPaymentProvider.generatePaymentLink({
-                ...data,
-                paymentReference,
-                amount: data.amount * 100,
-            })).paymentUrl,
-            [PaymentProviderEnum.BASE]: undefined,
-        };
-
         await this.paymentRequestModel.updateOne({
             _id: paymentRequest._id,
         }, {
             paymentUrl: paymentLink.paymentUrl,
-            providerPaymentUrls,
+            paymentChannels: paymentLink.paymentChannels,
         });
 
         return {
             paymentRequest: paymentRequest.toObject(),
-            paymentLink,
+            paymentUrl: paymentLink.paymentUrl,
         };
     }
 }

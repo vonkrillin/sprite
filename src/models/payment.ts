@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Types, Schema as MongooseSchema } from "mongoose";
-import { WalletCurrencyEnum, PaymentStatusEnum, PaymentProviderEnum } from "../enums";
+import { WalletCurrencyEnum, PaymentStatusEnum, PaymentProviderEnum, PaymentChannelTypeEnum, WalletProviderEnum } from "../enums";
 
 
 @Schema()
@@ -22,6 +22,25 @@ export class IPaymentRequestCheckoutData {
 
     @Prop({ required: false, type: MongooseSchema.Types.Mixed })
     metadata?: Record<string, any>;
+}
+
+
+@Schema()
+export class PaymentChannel {
+    @Prop({ required: true, enum: Object.values(PaymentChannelTypeEnum) })
+    type: PaymentChannelTypeEnum;
+
+    @Prop({ required: true, enum: Object.values(WalletCurrencyEnum) })
+    currency: WalletCurrencyEnum;
+
+    @Prop({ required: false })
+    address?: string;
+
+    @Prop({ required: false })
+    link?: string;
+
+    @Prop({ required: false, enum: Object.values(WalletProviderEnum) })
+    provider?: WalletProviderEnum;
 }
 
 
@@ -90,6 +109,9 @@ export class PaymentRequest extends Document {
 
     @Prop({ required: false, type: MongooseSchema.Types.Mixed })
     providerPaymentUrls?: Record<PaymentProviderEnum, string>;
+
+    @Prop({ required: false, type: Array<PaymentChannel> })
+    paymentChannels?: PaymentChannel[];
 }
 
 export const PaymentRequestSchema = SchemaFactory.createForClass(PaymentRequest);

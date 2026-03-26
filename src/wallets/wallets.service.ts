@@ -1,9 +1,10 @@
 import { BadRequestException, Injectable, NotFoundException, NotImplementedException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Wallet } from "../models/wallet";
+import { PaymentWallet } from "../models/payment-wallet";
 import { Model, Types } from "mongoose";
 import { WalletProviderFactory } from "./providers/wallet.provider";
-import { WalletProviderEnum, WalletStatusEnum } from "../enums";
+import { WalletProviderEnum, WalletStatusEnum, WalletCurrencyEnum } from "../enums";
 import { WalletEncryptionService } from "./encryption/wallet-encryption.service";
 
 
@@ -12,6 +13,7 @@ export class WalletsService {
     constructor(
         // todo: replace with repository pattern
         @InjectModel(Wallet.name) private readonly walletModel: Model<Wallet>,
+        @InjectModel(PaymentWallet.name) private readonly paymentWalletModel: Model<PaymentWallet>,
         private readonly walletProviderFactory: WalletProviderFactory,
         private readonly walletEncryptionService: WalletEncryptionService,
     ) { }
@@ -43,6 +45,42 @@ export class WalletsService {
             address: cryptoWallet.publicAddress,
             privateKeyEncrypted: await this.walletEncryptionService.encrypt(cryptoWallet.privateKey),
             mnemonicEncrypted: cryptoWallet.mnemonic ? await this.walletEncryptionService.encrypt(cryptoWallet.mnemonic) : null,
+        });
+    }
+
+    async createPaymentWallet(data: { paymentReference: string, currency: WalletCurrencyEnum, provider: WalletProviderEnum }) {
+        const availableWallet = await this.paymentWalletModel.findOneAndUpdate(
+            { 
+                currency: data.currency, 
+                provider: data.provider, 
+                isLocked: false 
+            },
+            { 
+                $set: { 
+                    isLocked: true, 
+                    paymentReference: data.paymentReference 
+                } 
+            },
+            { new: true }
+        );
+
+        if (availableWallet) {
+            return availableWallet;
+        }
+
+        const walletProvider = await this.getWalletProvider(data.provider);
+        const cryptoWallet = await walletProvider.createWalletAddress();
+        
+        return await this.paymentWalletModel.create({
+            paymentReference: data.paymentReference,
+            currency: data.currency,
+            provider: data.provider,
+            status: cryptoWallet.status,
+            balance: 0,
+            address: cryptoWallet.publicAddress,
+            privateKeyEncrypted: await this.walletEncryptionService.encrypt(cryptoWallet.privateKey),
+            mnemonicEncrypted: cryptoWallet.mnemonic ? await this.walletEncryptionService.encrypt(cryptoWallet.mnemonic) : null,
+            isLocked: true,
         });
     }
 

@@ -1,9 +1,17 @@
-import { WalletCurrencyEnum, PaymentStatusEnum } from '../../enums';
+import { WalletCurrencyEnum, PaymentStatusEnum, PaymentChannelTypeEnum, WalletProviderEnum } from '../../enums';
 
 export interface VerifyPaymentInput {
     paymentReference: string;
     transactionId?: string;
     metadata?: Record<string, any>; // Allow for provider-specific properties
+}
+
+export interface PaymentChannelInterface {
+    type: PaymentChannelTypeEnum;
+    currency: WalletCurrencyEnum;
+    address?: string;
+    link?: string;
+    provider?: WalletProviderEnum;
 }
 
 export interface GeneratePaymentLinkOutput {
@@ -13,6 +21,7 @@ export interface GeneratePaymentLinkOutput {
     paymentUrl?: string;
     status?: PaymentStatusEnum;
     metadata?: Record<string, any>;
+    paymentChannels?: PaymentChannelInterface[];
 }
 
 export interface VerifyPaymentOutput {

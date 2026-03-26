@@ -44,3 +44,8 @@ export enum PaymentProviderEnum {
     // todo: add other crypto providers 
     // when payment wallets are implemented
 }
+
+export enum PaymentChannelTypeEnum {
+    WALLET_ADDRESS = "WALLET_ADDRESS",
+    PAYMENT_LINK = "PAYMENT_LINK",
+}
