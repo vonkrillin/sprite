@@ -45,6 +45,9 @@ export class Organization extends Document {
   })
   status: OrganizationStatusEnum;
 
+  @Prop({ required: true })
+  currency: string;
+
   @Prop({ type: [Types.ObjectId], ref: 'Wallet', default: [] })
   wallets: Types.ObjectId[];
 

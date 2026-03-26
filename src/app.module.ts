@@ -6,6 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { OrganizationModule } from './organization/organization.module';
 import { AuthModule } from './auth/auth.module';
 import { WalletModule } from './wallets/wallet.module';
+import { StorefrontModule } from './storefront/storefront.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { WalletModule } from './wallets/wallet.module';
     AuthModule,
     OrganizationModule,
     WalletModule,
+    StorefrontModule,
   ],
   controllers: [AppController],
   providers: [AppService],

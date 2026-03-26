@@ -1,0 +1,134 @@
+import {
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Body,
+  UseGuards,
+  UploadedFile,
+  UseInterceptors,
+  BadRequestException,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import csv = require('csv-parser');
+import { Readable } from 'stream';
+import { ZodValidationPipe } from 'nestjs-zod';
+import { StorefrontService } from '../storefront.service';
+import { CreateProduct, UpdateProductDto } from '../dto/create.storefront.dto';
+import { JWTAuthGuard } from 'src/auth/auth.guard';
+import { csvProductSchema } from 'src/csv/dto/csv-product.dto';
+
+@Controller('products')
+@UseGuards(JWTAuthGuard)
+export class StorefrontController {
+  constructor(private readonly storefrontService: StorefrontService) {}
+
+  @Post()
+  createProduct(@Body(new ZodValidationPipe()) productDto: CreateProduct) {
+    return this.storefrontService.createProduct(productDto);
+  }
+
+  @Post('csv/upload')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+    if (!file) {
+      throw new BadRequestException('No file uploaded');
+    }
+
+    const results: any[] = [];
+    const errors: any[] = [];
+    let rowNumber = 1;
+
+    const stream = Readable.from(file.buffer);
+
+    const parsedData: any[] = await new Promise((resolve, reject) => {
+      stream
+        .pipe(csv())
+        .on('data', (data) => {
+          const validatedRow = csvProductSchema.safeParse(data);
+          console.log(data, 'test');
+          if (validatedRow.success) {
+            results.push(validatedRow.data);
+          } else {
+            errors.push({
+              row: rowNumber,
+              errors: validatedRow.error.flatten().fieldErrors,
+            });
+          }
+          rowNumber++;
+        })
+        .on('end', () => {
+          if (errors.length > 0) {
+            reject(
+              new BadRequestException({
+                message: 'CSV Validation Failed',
+                errors,
+              }),
+            );
+          } else {
+            resolve(results);
+          }
+        })
+        .on('error', (error) => {
+          reject(error);
+        });
+    });
+
+    try {
+      // 1. Extract unique category names and trim them
+      const categoryNames = parsedData
+        .map((p) => p.category?.trim())
+        .filter((c): c is string => !!c);
+
+      // 2. Resolve category names to ObjectIds (find existing or create new)
+      const categoryMap =
+        await this.storefrontService.resolveCategoryIds(categoryNames);
+
+      // 3. Map the product data to use their resolved category ObjectIds
+      const productsToSave = parsedData.map((p) => ({
+        ...p,
+        category: p.category ? categoryMap[p.category.trim()] : undefined,
+      }));
+
+      // 4. Bulk insert products into the database
+      const savedProducts =
+        await this.storefrontService.createManyProducts(productsToSave);
+
+      return {
+        message: 'CSV Import successful',
+        count: savedProducts.length,
+        products: savedProducts,
+      };
+    } catch (error) {
+      throw new BadRequestException({
+        message: 'Failed to save products',
+        error: error.message,
+      });
+    }
+  }
+
+  @Get()
+  getAllProducts() {
+    return this.storefrontService.getAllProducts();
+  }
+
+  @Get(':id')
+  getProductById(@Param('id') id: string) {
+    return this.storefrontService.getProductById(id);
+  }
+
+  @Put(':id')
+  updateProduct(
+    @Param('id') id: string,
+    @Body(new ZodValidationPipe()) productDto: UpdateProductDto,
+  ) {
+    return this.storefrontService.updateProduct(id, productDto);
+  }
+
+  @Delete(':id')
+  deleteProduct(@Param('id') id: string) {
+    return this.storefrontService.deleteProduct(id);
+  }
+}

@@ -44,7 +44,6 @@ export class OrganizationService {
   }
 
   async deleteOrg(orgId: string | Types.ObjectId) {
-    // Delete the board
     return await this.organizationModel.findByIdAndDelete(orgId);
   }
 

@@ -34,6 +34,6 @@ export class OrganizationController {
 
   @Delete(':id')
   removeOrganization(@Param('id') id: string) {
-    return;
+    return this.organizationService.deleteOrg(id);
   }
 }
