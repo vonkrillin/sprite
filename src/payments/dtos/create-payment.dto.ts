@@ -15,6 +15,7 @@ export const createPaymentRequestSchema = z.object({
     description: z.string(),
     allowedPaymentProviders: z.array(z.enum(Object.values(PaymentProviderEnum)))
         .default([PaymentProviderEnum.INTERSWITCH]),
+    currency: z.enum(Object.values(WalletCurrencyEnum)).default(WalletCurrencyEnum.NGN),
     supportedCurrencies: z.array(z.enum(Object.values(WalletCurrencyEnum)))
         .default([WalletCurrencyEnum.NGN]),
     expiresInMinutes: z.number().min(1).max(1440).default(720).optional(),

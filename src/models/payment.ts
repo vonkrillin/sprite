@@ -41,6 +41,9 @@ export class PaymentChannel {
 
     @Prop({ required: false, enum: Object.values(WalletProviderEnum) })
     provider?: WalletProviderEnum;
+
+    @Prop({ required: true })
+    expectedAmount: number;
 }
 
 

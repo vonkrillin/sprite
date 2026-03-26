@@ -6,11 +6,13 @@ import {
     VerifyPaymentOutput,
     PaymentChannelInterface
 } from "./payment-provider-input.interface";
-import { WalletCurrencyEnum, PaymentStatusEnum, WalletProviderEnum, PaymentChannelTypeEnum } from "../../enums";
+import { PaymentCurrencyService } from "../payment-currency.service";
 import { ConfigService } from "@nestjs/config";
 import { CreatePaymentRequestDto } from "../dtos/create-payment.dto";
 import { WalletsService } from "../../wallets/wallets.service";
 import { InterswitchPaymentProvider } from "./interswitch.provider";
+import { WalletCurrencyEnum, PaymentStatusEnum, WalletProviderEnum, PaymentChannelTypeEnum } from "../../enums";
+
 
 @Injectable()
 export class SpritePaymentProvider implements IPaymentProvider {
@@ -18,6 +20,7 @@ export class SpritePaymentProvider implements IPaymentProvider {
         private readonly configService: ConfigService,
         private readonly walletsService: WalletsService,
         private readonly interswitchPaymentProvider: InterswitchPaymentProvider,
+        private readonly paymentCurrencyService: PaymentCurrencyService,
     ) {}
 
     private _supportedCurrencies = [
@@ -42,6 +45,7 @@ export class SpritePaymentProvider implements IPaymentProvider {
         const paymentUrl = `${baseUrl}/payments/${paymentReference}`;
 
         const paymentChannels: PaymentChannelInterface[] = [];
+        const baseCurrency = data.currency;
 
         const supportedCurrencies = this._supportedCurrencies.filter((currency) => {
             return data.supportedCurrencies.includes(currency);
@@ -58,6 +62,7 @@ export class SpritePaymentProvider implements IPaymentProvider {
                 type: PaymentChannelTypeEnum.PAYMENT_LINK,
                 currency: WalletCurrencyEnum.NGN,
                 link: interswitchPaymentLink.paymentUrl, // Sprite internal hosted checkout page for NGN
+                expectedAmount: data.amount,
             });
         }
 
@@ -72,10 +77,16 @@ export class SpritePaymentProvider implements IPaymentProvider {
         for (const mapping of cryptoMappings) {
             if (supportedCurrencies.includes(mapping.currency)) {
                 try {
+                    const expectedAmount = await this.paymentCurrencyService.convertCurrency({
+                        fromCurrency: baseCurrency,
+                        toCurrency: mapping.currency,
+                        amount: data.amount,
+                    });
                     const wallet = await this.walletsService.createPaymentWallet({
                         paymentReference,
                         currency: mapping.currency,
                         provider: mapping.provider,
+                        expectedAmount,
                     });
 
                     paymentChannels.push({
@@ -83,6 +94,7 @@ export class SpritePaymentProvider implements IPaymentProvider {
                         currency: mapping.currency,
                         provider: mapping.provider,
                         address: wallet.address,
+                        expectedAmount,
                     });
                 } catch (error) {
                     console.error(`Failed to activate ${mapping.currency} channel on ${mapping.provider}`, error);

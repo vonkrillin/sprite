@@ -12,6 +12,7 @@ export interface PaymentChannelInterface {
     address?: string;
     link?: string;
     provider?: WalletProviderEnum;
+    expectedAmount: number;
 }
 
 export interface GeneratePaymentLinkOutput {

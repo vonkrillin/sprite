@@ -6,6 +6,7 @@ import { PaymentsController } from "./controllers/payments.controller";
 import { SpritePaymentProvider } from "./providers/sprite.provider";
 import { InterswitchPaymentProvider } from "./providers/interswitch.provider";
 import { WalletModule } from "../wallets/wallet.module";
+import { PaymentCurrencyService } from "./payment-currency.service";
 
 @Module({
     imports: [
@@ -15,7 +16,12 @@ import { WalletModule } from "../wallets/wallet.module";
         WalletModule,
     ],
     controllers: [PaymentsController],
-    providers: [PaymentsService, SpritePaymentProvider, InterswitchPaymentProvider],
+    providers: [
+        PaymentsService,
+        SpritePaymentProvider,
+        InterswitchPaymentProvider,
+        PaymentCurrencyService,
+    ],
     exports: [PaymentsService],
 })
 export class PaymentModule { }

@@ -22,7 +22,7 @@ export class TronWalletProvider implements IWalletProvider {
             mnemonic: null, // todo: implement mnemonic generation
             privateKey: account.privateKey,
             publicAddress: account.publicKey,
-            status: WalletStatusEnum.INACTIVE, // tron wallets require transfers to activate
+            status: WalletStatusEnum.ACTIVE, // tron wallets require transfers to activate
             currency: WalletCurrencyEnum.TRX,
         };
     }

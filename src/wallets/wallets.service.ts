@@ -48,7 +48,7 @@ export class WalletsService {
         });
     }
 
-    async createPaymentWallet(data: { paymentReference: string, currency: WalletCurrencyEnum, provider: WalletProviderEnum }) {
+    async createPaymentWallet(data: { paymentReference: string, currency: WalletCurrencyEnum, provider: WalletProviderEnum, expectedAmount: number }) {
         const availableWallet = await this.paymentWalletModel.findOneAndUpdate(
             { 
                 currency: data.currency, 
@@ -58,7 +58,8 @@ export class WalletsService {
             { 
                 $set: { 
                     isLocked: true, 
-                    paymentReference: data.paymentReference 
+                    paymentReference: data.paymentReference,
+                    expectedAmount: data.expectedAmount 
                 } 
             },
             { new: true }
@@ -81,6 +82,7 @@ export class WalletsService {
             privateKeyEncrypted: await this.walletEncryptionService.encrypt(cryptoWallet.privateKey),
             mnemonicEncrypted: cryptoWallet.mnemonic ? await this.walletEncryptionService.encrypt(cryptoWallet.mnemonic) : null,
             isLocked: true,
+            expectedAmount: data.expectedAmount,
         });
     }
 

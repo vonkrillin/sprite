@@ -23,6 +23,9 @@ export class PaymentWallet extends Document {
     @Prop({ required: true, default: 0 })
     balance: number;
 
+    @Prop({ required: true })
+    expectedAmount: number;
+
     @Prop({ required: true, default: false })
     isLocked: boolean;
 
