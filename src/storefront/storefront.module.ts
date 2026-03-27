@@ -11,6 +11,7 @@ import { StorefrontService } from './storefront.service';
 import { StorefrontController } from './controllers/storefront.controllers';
 import { CategoriesController } from './controllers/categories.controller';
 import { StorefrontDashboardController } from './controllers/storefront-dashboard.controller';
+import { PaymentModule } from '../payments/payment.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { StorefrontDashboardController } from './controllers/storefront-dashboar
         schema: StorefrontSchema,
       },
     ]),
+    PaymentModule,
   ],
   controllers: [
     StorefrontController,

@@ -11,6 +11,7 @@ import {
   UseInterceptors,
   BadRequestException,
   Req,
+  HttpCode,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import csv = require('csv-parser');
@@ -21,10 +22,16 @@ import { CreateProduct, UpdateProductDto, UpdateStorefrontDto } from '../dto/cre
 import { JWTAuthGuard } from 'src/auth/auth.guard';
 import { csvProductSchema } from 'src/csv/dto/csv-product.dto';
 import { Types } from 'mongoose';
+import { PaymentsService } from 'src/payments/payments.service';
+import { type CreatePaymentRequestDto, createPaymentRequestSchema } from 'src/payments/dtos/create-payment.dto';
+import { WalletCurrencyEnum } from '../../enums';
 
 @Controller('storefront')
 export class StorefrontController {
-  constructor(private readonly storefrontService: StorefrontService) { }
+  constructor(
+    private readonly storefrontService: StorefrontService,
+    private readonly paymentsService: PaymentsService,
+  ) { }
 
   @Post()
   @UseGuards(JWTAuthGuard)
@@ -127,6 +134,19 @@ export class StorefrontController {
         error: error.message,
       });
     }
+  }
+
+  @Post(':storeId/payment-request')
+  @HttpCode(201)
+  async createPaymentRequest(
+    @Param('storeId') storeId: string,
+    @Body(new ZodValidationPipe(createPaymentRequestSchema)) data: CreatePaymentRequestDto
+  ) {
+    const storefront = await this.storefrontService.getStorefront(new Types.ObjectId(storeId));
+    return this.paymentsService.createPaymentRequest({
+      ...data,
+      organization: storefront.organization as Types.ObjectId,
+    });
   }
 
   @Get(':storeId/products')

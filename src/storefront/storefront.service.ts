@@ -34,6 +34,14 @@ export class StorefrontService {
     return storefront;
   }
 
+  async getStorefrontByOrgId(organizationId: string | Types.ObjectId): Promise<Storefront> {
+    const storefront = await this.storefrontModel.findOne({ organization: new Types.ObjectId(organizationId) });
+    if (!storefront) {
+      throw new NotFoundException('Storefront not found');
+    }
+    return storefront;
+  }
+
   async updateOrCreateStorefront(
     organizationId: string | Types.ObjectId,
     storefrontData: Partial<Storefront>,
@@ -118,6 +126,12 @@ export class StorefrontService {
       throw new NotFoundException('Product not found');
     }
     return product;
+  }
+
+  async getProductsByIds(productIds: (string | Types.ObjectId)[]): Promise<Products[]> {
+    return await this.productsModel.find({
+      _id: { $in: productIds.map(id => new Types.ObjectId(id)) }
+    }).populate('category');
   }
 
   async updateProduct(

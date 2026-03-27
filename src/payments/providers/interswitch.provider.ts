@@ -58,7 +58,7 @@ export class InterswitchPaymentProvider implements IPaymentProvider {
         await this.generateAccessToken();
         const payload = {
             merchantCode: this.merchantCode,
-            amount: data.amount,
+            amount: data.amount!,
             currencyCode: 566, // NGN payments
             payableCode: this.payableCode,
             transactionReference: data.paymentReference,
@@ -75,7 +75,7 @@ export class InterswitchPaymentProvider implements IPaymentProvider {
         });
 
         return {
-            amount: data.amount,
+            amount: data.amount!,
             supportedCurrencies: [WalletCurrencyEnum.NGN],
             paymentReference: response.data.transactionReference,
             paymentUrl: response.data.paymentUrl,

@@ -56,13 +56,13 @@ export class SpritePaymentProvider implements IPaymentProvider {
             const interswitchPaymentLink = await this.interswitchPaymentProvider.generatePaymentLink({
                 ...data,
                 paymentReference,
-                amount: data.amount * 100,
+                amount: data.amount! * 100,
             });
             paymentChannels.push({
                 type: PaymentChannelTypeEnum.PAYMENT_LINK,
                 currency: WalletCurrencyEnum.NGN,
                 link: interswitchPaymentLink.paymentUrl, // Sprite internal hosted checkout page for NGN
-                expectedAmount: data.amount,
+                expectedAmount: data.amount!,
             });
         }
 
@@ -80,7 +80,7 @@ export class SpritePaymentProvider implements IPaymentProvider {
                     const expectedAmount = await this.paymentCurrencyService.convertCurrency({
                         fromCurrency: baseCurrency,
                         toCurrency: mapping.currency,
-                        amount: data.amount,
+                        amount: data.amount!,
                     });
                     const wallet = await this.walletsService.createPaymentWallet({
                         paymentReference,
@@ -104,7 +104,7 @@ export class SpritePaymentProvider implements IPaymentProvider {
         }
 
         return {
-            amount: data.amount,
+            amount: data.amount!,
             supportedCurrencies,
             paymentReference,
             paymentUrl: paymentUrl,
