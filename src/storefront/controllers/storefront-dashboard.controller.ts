@@ -13,6 +13,7 @@ import { StorefrontService } from '../storefront.service';
 import {
     CreateProduct,
     ProductCategoryDto,
+    UpdateStorefrontDto,
 } from '../dto/create.storefront.dto';
 import { type Response } from 'express';
 import { CookieSSRGuard } from '../../auth/auth.guard';
@@ -161,6 +162,47 @@ export class StorefrontDashboardController {
                 title: 'Create Category',
                 showSidebar: true,
                 error: error.message || 'An error occurred during category creation',
+            });
+        }
+    }
+
+    @Get('storefront')
+    @Render('dashboard/storefront/settings')
+    async getSettings(@Req() req: any) {
+        const organizationId = req.organization._id;
+        try {
+            const storefront = await this.storefrontService.getStorefront(organizationId);
+            return {
+                title: 'Shop Settings',
+                storefront,
+                showSidebar: true,
+            };
+        } catch (error) {
+            // If storefront document doesn't exist yet, pass an empty object or default name
+            return {
+                title: 'Shop Settings',
+                storefront: { name: req.organization.businessName },
+                showSidebar: true,
+            };
+        }
+    }
+
+    @Post('storefront')
+    async postSettings(
+        @Body() settingsDto: UpdateStorefrontDto,
+        @Req() req: any,
+        @Res() res: Response,
+    ) {
+        try {
+            const organizationId = req.organization._id;
+            await this.storefrontService.updateOrCreateStorefront(organizationId, settingsDto);
+            return res.redirect('/dashboard/storefront');
+        } catch (error) {
+            return res.render('dashboard/storefront/settings', {
+                title: 'Shop Settings',
+                storefront: settingsDto,
+                showSidebar: true,
+                error: error.message || 'An error occurred while updating settings',
             });
         }
     }

@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ProductCategory, Products } from 'src/models/products';
+import { Storefront } from 'src/models/storefront';
 import {
   CreateProduct,
   UpdateProductDto,
@@ -20,7 +21,31 @@ export class StorefrontService {
     private productsModel: Model<Products>,
     @InjectModel(ProductCategory.name)
     private productCategoryModel: Model<ProductCategory>,
+    @InjectModel(Storefront.name)
+    private storefrontModel: Model<Storefront>,
   ) {}
+
+  async getStorefront(organizationId: string | Types.ObjectId): Promise<Storefront> {
+    const storefront = await this.storefrontModel.findOne({
+      organization: new Types.ObjectId(organizationId),
+    }).populate('organization');
+    
+    if (!storefront) {
+      throw new NotFoundException('Storefront not found');
+    }
+    return storefront;
+  }
+
+  async updateOrCreateStorefront(
+    organizationId: string | Types.ObjectId,
+    storefrontData: Partial<Storefront>,
+  ): Promise<Storefront> {
+    return await this.storefrontModel.findOneAndUpdate(
+      { organization: new Types.ObjectId(organizationId) },
+      { $set: { ...storefrontData, organization: new Types.ObjectId(organizationId) } },
+      { upsert: true, new: true },
+    );
+  }
 
   async createProduct(productDto: CreateProduct & { organization: Types.ObjectId }): Promise<Products> {
     return await this.productsModel.create(productDto);
