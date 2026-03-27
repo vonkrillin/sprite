@@ -5,7 +5,7 @@ import { OrganizationService } from 'src/organization/organization.service';
 import { JwtService } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Organization, OrganizationSchema } from 'src/models/organization';
-import { JWTAuthGuard } from './auth.guard';
+import { JWTAuthGuard, CookieSSRGuard } from './auth.guard';
 import { Global } from '@nestjs/common';
 
 @Global()
@@ -16,7 +16,7 @@ import { Global } from '@nestjs/common';
     ]),
   ],
   controllers: [AuthController],
-  providers: [AuthService, OrganizationService, JwtService, JWTAuthGuard],
-  exports: [JWTAuthGuard, JwtService],
+  providers: [AuthService, OrganizationService, JwtService, JWTAuthGuard, CookieSSRGuard],
+  exports: [JWTAuthGuard, JwtService, AuthService, CookieSSRGuard],
 })
 export class AuthModule {}

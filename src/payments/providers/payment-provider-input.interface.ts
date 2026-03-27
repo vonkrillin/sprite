@@ -1,31 +1,4 @@
-import { WalletCurrencyEnum } from '../../enums';
-
-export interface PaymentItem {
-    name: string;
-    description: string;
-    price: number;
-    quantity: number;
-    currency: WalletCurrencyEnum;
-    metadata?: Record<string, any>;
-}
-
-export interface CustomerData {
-    email: string;
-    name?: string;
-    phoneNumber?: string;
-}
-
-export interface GeneratePaymentLinkInput {
-    amount: number;
-    currency: WalletCurrencyEnum;
-    paymentReference: string;
-    description?: string;
-    customer?: CustomerData;
-    checkoutItems?: PaymentItem[];
-    redirectUrl?: string;
-    metadata?: Record<string, any>;
-    expiresInMinutes?: number;
-}
+import { WalletCurrencyEnum, PaymentStatusEnum, PaymentChannelTypeEnum, WalletProviderEnum } from '../../enums';
 
 export interface VerifyPaymentInput {
     paymentReference: string;
@@ -33,15 +6,23 @@ export interface VerifyPaymentInput {
     metadata?: Record<string, any>; // Allow for provider-specific properties
 }
 
-import { PaymentStatusEnum } from '../../enums';
+export interface PaymentChannelInterface {
+    type: PaymentChannelTypeEnum;
+    currency: WalletCurrencyEnum;
+    address?: string;
+    link?: string;
+    provider?: WalletProviderEnum;
+    expectedAmount: number;
+}
 
 export interface GeneratePaymentLinkOutput {
     amount: number;
-    currency: WalletCurrencyEnum;
+    supportedCurrencies: WalletCurrencyEnum[];
     paymentReference: string;
     paymentUrl?: string;
     status?: PaymentStatusEnum;
     metadata?: Record<string, any>;
+    paymentChannels?: PaymentChannelInterface[];
 }
 
 export interface VerifyPaymentOutput {

@@ -7,11 +7,13 @@ import { WalletsController } from "./wallets.controller";
 import { WalletsService } from "./wallets.service";
 import { MongooseModule } from "@nestjs/mongoose";
 import { Wallet, WalletSchema } from "../models/wallet";
+import { PaymentWallet, PaymentWalletSchema } from "../models/payment-wallet";
 
 @Module({
     imports: [
         MongooseModule.forFeature([
             { name: Wallet.name, schema: WalletSchema },
+            { name: PaymentWallet.name, schema: PaymentWalletSchema },
         ]),
     ],
     providers: [
@@ -24,6 +26,7 @@ import { Wallet, WalletSchema } from "../models/wallet";
     exports: [
         WalletProviderFactory,
         WalletEncryptionService,
+        WalletsService,
     ],
     controllers: [
         WalletsController,

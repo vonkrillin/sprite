@@ -47,6 +47,35 @@ export class JWTAuthGuard implements CanActivate {
   }
 }
 
+
+@Injectable()
+export class CookieSSRGuard implements CanActivate {
+  constructor(private jwtService: JwtService) {}
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const request = context.switchToHttp().getRequest();
+    const response = context.switchToHttp().getResponse();
+    const token = request.cookies?.access_token;
+
+    if (!token) {
+      response.redirect('/dashboard/login');
+      return false;
+    }
+
+    try {
+      const payload = await this.jwtService.verifyAsync(token, {
+        secret: process.env.ACCESS_TOKEN_SECRET,
+      });
+
+      request['organization'] = payload;
+      return true;
+    } catch {
+      response.redirect('/dashboard/login');
+      return false;
+    }
+  }
+}
+
 @Injectable()
 export class RolesGuard implements CanActivate {
   // constructor(private reflector: Reflector) {} // Inject Reflector when implementing core logic
