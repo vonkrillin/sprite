@@ -23,11 +23,11 @@ import { csvProductSchema } from 'src/csv/dto/csv-product.dto';
 import { Types } from 'mongoose';
 
 @Controller('storefront')
-@UseGuards(JWTAuthGuard)
 export class StorefrontController {
   constructor(private readonly storefrontService: StorefrontService) {}
 
   @Post()
+  @UseGuards(JWTAuthGuard)
   createStorefront(@Body(new ZodValidationPipe()) storefrontDto: UpdateStorefrontDto, @Req() req: any) {
     return this.storefrontService.updateOrCreateStorefront(new Types.ObjectId(req.organization._id), storefrontDto);
   }
@@ -38,6 +38,7 @@ export class StorefrontController {
   }
 
   @Post('products')
+  @UseGuards(JWTAuthGuard)
   createProduct(@Body(new ZodValidationPipe()) productDto: CreateProduct, @Req() req: any) {
     // const image = Image
     return this.storefrontService.createProduct({
@@ -48,6 +49,7 @@ export class StorefrontController {
 
   @Post('products/csv-upload')
   @UseInterceptors(FileInterceptor('file'))
+  @UseGuards(JWTAuthGuard)
   async uploadFile(@UploadedFile() file: Express.Multer.File, @Req() req: any) {
     if (!file) {
       throw new BadRequestException('No file uploaded');
@@ -142,6 +144,7 @@ export class StorefrontController {
   }
 
   @Put('products/:id')
+  @UseGuards(JWTAuthGuard)
   updateProduct(
     @Param('id') id: string,
     @Body(new ZodValidationPipe()) productDto: UpdateProductDto,
@@ -157,6 +160,7 @@ export class StorefrontController {
   }
 
   @Delete('products/:id')
+  @UseGuards(JWTAuthGuard)
   deleteProduct(@Param('id') id: string, @Req() req: any) {
     return this.storefrontService.deleteProduct({
       productId: id,
