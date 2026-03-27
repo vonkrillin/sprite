@@ -1,17 +1,18 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Types } from "mongoose";
+import { WalletCurrencyEnum } from 'src/enums';
 
 export enum OrganizationTypeEnum {
-	BUSINESS = "BUSINESS",
-	INDIVIDUAL = "INDIVIDUAL",
-	NONPROFIT = "NONPROFIT",
+  BUSINESS = 'BUSINESS',
+  INDIVIDUAL = 'INDIVIDUAL',
+  NONPROFIT = 'NONPROFIT',
 }
 
 export enum OrganizationStatusEnum {
-	PENDING = "PENDING",
-	ACTIVE = "ACTIVE",
-	SUSPENDED = "SUSPENDED",
-	DELETED = "DELETED",
+  PENDING = 'PENDING',
+  ACTIVE = 'ACTIVE',
+  SUSPENDED = 'SUSPENDED',
+  DELETED = 'DELETED',
 }
 
 @Schema({
@@ -44,6 +45,9 @@ export class Organization extends Document {
     default: OrganizationStatusEnum.PENDING,
   })
   status: OrganizationStatusEnum;
+
+  @Prop({ required: true, enum: Object.values(WalletCurrencyEnum) })
+  currency: WalletCurrencyEnum;
 
   @Prop({ type: [Types.ObjectId], ref: 'Wallet', default: [] })
   wallets: Types.ObjectId[];

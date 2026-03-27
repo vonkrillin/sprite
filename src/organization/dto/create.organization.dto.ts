@@ -5,6 +5,7 @@ export const createOrgDto = z
   .object({
     businessName: z.string('Business name is too short').min(3),
     email: z.email('Email is required'),
+    currency: z.string(),
     password: z
       .string('Password is required')
       .min(6, 'Password should be 6 characters long'),
