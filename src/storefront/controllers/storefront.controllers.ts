@@ -24,7 +24,7 @@ import { Types } from 'mongoose';
 
 @Controller('storefront')
 export class StorefrontController {
-  constructor(private readonly storefrontService: StorefrontService) {}
+  constructor(private readonly storefrontService: StorefrontService) { }
 
   @Post()
   @UseGuards(JWTAuthGuard)
@@ -42,7 +42,7 @@ export class StorefrontController {
   createProduct(@Body(new ZodValidationPipe()) productDto: CreateProduct, @Req() req: any) {
     // const image = Image
     return this.storefrontService.createProduct({
-      ...productDto, 
+      ...productDto,
       organization: new Types.ObjectId(req.organization._id)
     });
   }
@@ -129,17 +129,18 @@ export class StorefrontController {
     }
   }
 
-  @Get()
-  getAllProducts(@Req() req: any) {
-    const organizationId = req.organization._id;
-    return this.storefrontService.getAllProducts(organizationId);
+  @Get(':storeId/products')
+  getAllProducts(@Param('storeId') storeId: string, @Req() req: any) {
+    return this.storefrontService.getAllProducts(storeId);
   }
 
-  @Get('products/:id')
-  getProductById(@Param('id') id: string, @Req() req: any) {
+  @Get(':storeId/products/:productId')
+  getProductById(
+    @Param('storeId') storeId: string,
+    @Param('productId') productId: string, @Req() req: any) {
     return this.storefrontService.getProductById({
-      organizationId: req.organization._id,
-      productId: id,
+      storeId,
+      productId,
     });
   }
 

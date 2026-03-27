@@ -55,32 +55,41 @@ export class StorefrontService {
   }
 
   async getAllProducts(
-    id: string | Types.ObjectId,
+    storeId: string | Types.ObjectId,
     queryData: { page?: number; limit?: number } = {},
   ): Promise<{ data: Products[]; total: number }> {
     const { page = 1, limit = 10 } = queryData;
     const skip = (page - 1) * limit;
+    const storefront = await this.storefrontModel.findById(storeId);
+    if (!storefront) {
+      throw new NotFoundException('Storefront not found');
+    }
     const [data, total] = await Promise.all([
       this.productsModel
-        .find({ organization: new Types.ObjectId(id) })
+        .find({ organization: storefront.organization })
         .populate('category')
         .skip(skip)
         .limit(limit)
         .sort({ createdAt: -1 }),
       this.productsModel.countDocuments({
-        organization: new Types.ObjectId(id),
+        organization: storefront.organization,
       }),
     ]);
     return { data, total };
   }
 
   async getProductById(data: {
-    organizationId: string;
+    storeId: string;
     productId: string;
   }): Promise<Products> {
+    const storefront = await this.storefrontModel.findById(data.storeId);
+    if (!storefront) {
+      throw new NotFoundException('Storefront not found');
+    }
+
     const product = await this.productsModel
       .findById({
-        organization: new Types.ObjectId(data.organizationId),
+        organization: storefront.organization,
         _id: new Types.ObjectId(data.productId),
       })
       .populate('category');
