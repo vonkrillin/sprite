@@ -9,7 +9,6 @@ import {
 } from '@nestjs/common';
 import { AuthService } from 'src/auth/auth.service';
 import { LoginOrgDto } from 'src/organization/dto/create.organization.dto';
-import { Response } from 'express';
 import { CookieSSRGuard } from 'src/auth/auth.guard';
 
 @Controller('dashboard')
