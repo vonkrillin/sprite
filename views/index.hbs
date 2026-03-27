@@ -1,87 +1,427 @@
-<div class="welcome-container">
-    <div class="welcome-card glass-effect">
-        <div class="brand">
-            <div class="logo">S</div>
-            <h1>Sprite Application</h1>
-            <p>{{message}} to progress to the dashboard.</p>
+<div class="landing-page">
+    <!-- Hero Section -->
+    <header class="hero-section">
+        <nav class="navbar glass-effect">
+            <div class="logo-container">
+                <div class="logo">S</div>
+                <span class="logo-text">Sprite</span>
+            </div>
+            <div class="nav-links">
+                <a href="/dashboard/login" class="nav-btn">Login</a>
+                <a href="/dashboard/register" class="nav-btn primary">Get Started</a>
+            </div>
+        </nav>
+
+        <div class="hero-content">
+            <h1 class="animate-text">Power Your Business with <span class="accent">Supercharged Crypto Payments</span></h1>
+            <p class="animate-text">A premium storefront experience integrated with Algorand and Tron. Scalable, secure, and ready for your catalog.</p>
+            <div class="cta-group animate-text">
+                <a href="/dashboard/register" class="hero-btn primary">Launch Your Store</a>
+                <a href="#features" class="hero-btn secondary">Explore Features</a>
+            </div>
         </div>
-        <div class="actions">
-            <a href="/dashboard/login" class="login-button">Go to Dashboard Login</a>
+    </header>
+
+    <!-- Currency Section -->
+    <section id="features" class="section currency-section">
+        <div class="container">
+            <h2 class="section-title reveal" style="display: flex; align-items: center; justify-content: center; gap: 12px;">
+                <iconify-icon icon="lucide:circle-dollar-sign" style="color: var(--primary); font-size: 36px;"></iconify-icon>
+                Multi-Currency Power
+            </h2>
+            <div class="currency-grid">
+                <div class="currency-card glass-effect reveal">
+                    <div class="icon-circle algo">A</div>
+                    <h3>Algorand</h3>
+                    <p>Native ALGO support with instant transaction verification and low fees.</p>
+                </div>
+                <div class="currency-card glass-effect reveal">
+                    <div class="icon-circle tron">T</div>
+                    <h3>Tron</h3>
+                    <p>High-speed TRC-20 transactions for seamless cross-border value transfer.</p>
+                </div>
+                <div class="currency-card glass-effect reveal">
+                    <div class="icon-circle fiat">$</div>
+                    <h3>Fiat Gateway</h3>
+                    <p>Bridge traditional banking with digital assets using our secure fiat rails.</p>
+                </div>
+            </div>
         </div>
-    </div>
+    </section>
+
+    <!-- Dashboard Preview -->
+    <section class="section dashboard-preview">
+        <div class="container text-center">
+            <h2 class="section-title reveal">Control Center</h2>
+            <p class="reveal">Monitor transactions, manage wallets, and oversee your entire organization from one unified interface.</p>
+            <div class="dashboard-screenshot glass-effect reveal">
+                <img src="/dashboard.png" alt="Sprite Dashboard Preview" class="screenshot-img">
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="section final-cta">
+        <div class="container glass-effect reveal">
+            <h2>Ready to modernize your business?</h2>
+            <p>Join the future of commerce with Sprite's hybrid financial infrastructure.</p>
+            <a href="/dashboard/register" class="hero-btn primary">Get Started Now</a>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 Sprite Application. All rights reserved.</p>
+        </div>
+    </footer>
 </div>
 
 <style>
-    .welcome-container {
+    :root {
+        --accent: #5bc8d8;
+        --algo-color: #000000;
+        --tron-color: #ff0013;
+        --fiat-color: #22c55e;
+    }
+
+    .landing-page {
+        overflow-x: hidden;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 24px;
+    }
+
+    .section {
+        padding: 100px 0;
+    }
+
+    .text-center { text-align: center; }
+
+    .text-content p {
+        line-height: 1.8;
+        color: var(--text-muted);
+        font-size: 16px;
+    }
+
+    .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+        align-items: center;
+    }
+
+    .grid-2-reverse {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+        align-items: center;
+        direction: rtl;
+    }
+    .grid-2-reverse > * { direction: ltr; }
+
+    /* Navbar */
+    .navbar {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90%;
+        max-width: 1100px;
+        padding: 12px 24px;
+        border-radius: 100px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    .logo-container {
+        display: flex;
+        align-items: center; gap: 12px; }
+
+    .logo {
+        width: 36px;
+        height: 36px;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+        color: white;
+        border-radius: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
-        min-height: 100vh;
-        background: radial-gradient(circle at top right, #eef2ff 0%, #f8fafc 50%, #f1f5f9 100%);
-        padding: 20px;
+        font-weight: 700;
     }
 
-    .welcome-card {
-        width: 100%;
-        max-width: 440px;
-        padding: 48px;
-        border-radius: 24px;
-        box-shadow: var(--shadow-lg);
-        background: rgba(255, 255, 255, 0.9);
-        border: 1px solid rgba(255, 255, 255, 0.5);
-        text-align: center;
+    .logo-text {
+        font-weight: 700;
+        font-size: 20px;
+        letter-spacing: -0.5px;
     }
 
-    .brand {
-        margin-bottom: 32px;
+    .nav-btn {
+        text-decoration: none;
+        color: var(--text-main);
+        font-weight: 600;
+        font-size: 14px;
+        padding: 8px 16px;
+        transition: all 0.2s;
     }
 
-    .logo {
-        width: 48px;
-        height: 48px;
-        background: linear-gradient(135deg, var(--primary) 0%, #818cf8 100%);
+    .nav-btn.primary {
+        background: var(--primary);
         color: white;
+        border-radius: 50px;
+    }
+
+    /* Hero Section */
+    .hero-section {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        background: radial-gradient(circle at top right, #eefafc 0%, #f8fafc 50%, #f1f5f9 100%);
+        padding: 120px 24px 60px;
+    }
+
+    .hero-content h1 {
+        font-size: clamp(40px, 8vw, 72px);
+        font-weight: 800;
+        line-height: 1.1;
+        margin-bottom: 24px;
+        max-width: 900px;
+        margin-inline: auto;
+    }
+
+    .accent {
+        color: var(--primary);
+        position: relative;
+    }
+
+    .hero-content p {
+        font-size: 18px;
+        color: var(--text-muted);
+        max-width: 600px;
+        margin-bottom: 40px;
+        margin-inline: auto;
+    }
+
+    .cta-group {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .hero-btn {
+        padding: 16px 32px;
         border-radius: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .hero-btn.primary {
+        background: var(--primary);
+        color: white;
+        box-shadow: 0 10px 15px -3px rgba(36, 171, 191, 0.3);
+    }
+
+    .hero-btn.secondary {
+        background: white;
+        color: var(--text-main);
+        border: 1px solid var(--border);
+    }
+
+    .hero-btn:hover {
+        transform: translateY(-2px);
+    }
+
+    /* Currency Cards */
+    .currency-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 32px;
+        margin-top: 60px;
+    }
+
+    .currency-card {
+        padding: 40px;
+        border-radius: 24px;
+        text-align: left;
+        transition: transform 0.3s;
+    }
+
+    .currency-card:hover {
+        transform: translateY(-10px);
+    }
+
+    .icon-circle {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 24px;
         font-weight: 700;
-        margin: 0 auto 16px;
-        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-    }
-
-    .brand h1 {
-        font-size: 28px;
-        font-weight: 700;
-        color: var(--text-main);
-        letter-spacing: -0.025em;
-        margin-bottom: 8px;
-    }
-
-    .brand p {
-        color: var(--text-muted);
-        font-size: 15px;
-    }
-
-    .login-button {
-        display: inline-block;
-        width: 100%;
-        padding: 14px;
-        background: var(--primary);
         color: white;
-        border: none;
-        border-radius: 12px;
-        font-size: 16px;
-        font-weight: 600;
-        text-decoration: none;
-        transition: all 0.2s ease;
-        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+        margin-bottom: 24px;
     }
 
-    .login-button:hover {
-        background: var(--primary-hover);
-        transform: translateY(-1px);
-        box-shadow: 0 6px 16px rgba(99, 102, 241, 0.3);
+    .icon-circle.algo { background: var(--algo-color); }
+    .icon-circle.tron { background: var(--tron-color); }
+    .icon-circle.fiat { background: var(--fiat-color); }
+
+    /* Mockups */
+    .product-mockup, .dashboard-screenshot {
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .product-mockup {
+        width: 100%;
+        max-width: 400px;
+        padding: 20px;
+    }
+
+    .mock-img {
+        width: 100%;
+        height: 200px;
+        background: #e9f7f8;
+        border-radius: 12px;
+        margin-bottom: 16px;
+    }
+
+    .mock-line-lg { width: 70%; height: 12px; background: var(--border); border-radius: 6px; margin-bottom: 8px; }
+    .mock-line-sm { width: 40%; height: 12px; background: var(--border); border-radius: 6px; margin-bottom: 16px; }
+    .mock-price { font-size: 20px; font-weight: 700; color: var(--primary); }
+
+    .feature-list {
+        list-style: none;
+        margin-top: 24px;
+    }
+
+    .feature-list li {
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--text-muted);
+        font-weight: 500;
+    }
+
+    .feature-list li::before {
+        content: "•";
+        color: var(--primary);
+        font-size: 24px;
+        line-height: 1;
+    }
+
+    .dashboard-screenshot {
+        width: 100%;
+        max-width: 1000px;
+        margin: 60px auto 0;
+        background: white;
+        padding: 12px;
+    }
+
+    .screenshot-img {
+        width: 100%;
+        height: auto;
+        border-radius: 12px;
+        display: block;
+    }
+
+    .screenshot-placeholder {
+        width: 100%;
+        height: 100%;
+        background: #f1f5f9;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        font-weight: 500;
+        border: 2px dashed var(--border);
+    }
+
+    /* Final CTA */
+    .final-cta .container {
+        padding: 80px;
+        text-align: center;
+        border-radius: 40px;
+        background: linear-gradient(135deg, rgba(36, 171, 191, 0.1) 0%, rgba(91, 200, 216, 0.1) 100%);
+    }
+
+    .final-cta h2 { font-size: 36px; margin-bottom: 16px; }
+    .final-cta p { margin-bottom: 32px; color: var(--text-muted); }
+
+    .footer {
+        padding: 40px 0;
+        border-top: 1px solid var(--border);
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 14px;
+    }
+
+    /* Animations */
+    .reveal {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    @media (max-width: 768px) {
+        .grid-2, .grid-2-reverse {
+            grid-template-columns: 1fr;
+            text-align: center;
+        }
+        .hero-content h1 { font-size: 40px; }
+        .hero-section { padding-top: 160px; }
+        .grid-2-reverse { direction: ltr; }
+        .final-cta h2 { font-size: 28px; }
     }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Hero Stagger
+        gsap.from('.animate-text', {
+            y: 40,
+            opacity: 0,
+            duration: 1,
+            stagger: 0.2,
+            ease: 'power3.out'
+        });
+
+        // Floating Animation
+        gsap.to('.animate-float', {
+            y: -20,
+            duration: 2,
+            repeat: -1,
+            yoyo: true,
+            ease: 'sine.inOut'
+        });
+
+        // Section Reveal
+        gsap.utils.toArray('.reveal').forEach(elem => {
+            gsap.to(elem, {
+                scrollTrigger: {
+                    trigger: elem,
+                    start: 'top 85%',
+                    toggleActions: 'play none none none'
+                },
+                y: 0,
+                opacity: 1,
+                duration: 1,
+                ease: 'power3.out'
+            });
+        });
+    });
+</script>
