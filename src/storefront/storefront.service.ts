@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ProductCategory, Products } from 'src/models/products';
+import { Storefront } from 'src/models/storefront';
 import {
   CreateProduct,
   UpdateProductDto,
@@ -20,21 +21,59 @@ export class StorefrontService {
     private productsModel: Model<Products>,
     @InjectModel(ProductCategory.name)
     private productCategoryModel: Model<ProductCategory>,
+    @InjectModel(Storefront.name)
+    private storefrontModel: Model<Storefront>,
   ) {}
 
-  async createProduct(productDto: CreateProduct): Promise<Products> {
+  async getStorefront(organizationId: string | Types.ObjectId): Promise<Storefront> {
+    const storefront = await this.storefrontModel.findOne({
+      organization: new Types.ObjectId(organizationId),
+    }).populate('organization');
+    
+    if (!storefront) {
+      throw new NotFoundException('Storefront not found');
+    }
+    return storefront;
+  }
+
+  async updateOrCreateStorefront(
+    organizationId: string | Types.ObjectId,
+    storefrontData: Partial<Storefront>,
+  ): Promise<Storefront> {
+    return await this.storefrontModel.findOneAndUpdate(
+      { organization: new Types.ObjectId(organizationId) },
+      { $set: { ...storefrontData, organization: new Types.ObjectId(organizationId) } },
+      { upsert: true, new: true },
+    );
+  }
+
+  async createProduct(productDto: CreateProduct & { organization: Types.ObjectId }): Promise<Products> {
     return await this.productsModel.create(productDto);
   }
 
-  async createManyProducts(products: CreateProduct[]) {
+  async createManyProducts(products: (CreateProduct & { organization: Types.ObjectId })[]) {
     const result = await this.productsModel.insertMany(products);
     return result;
   }
 
-  async getAllProducts(id: string | Types.ObjectId): Promise<Products[] | []> {
-    return await this.productsModel
-      .find({ organization: new Types.ObjectId(id) })
-      .populate('category');
+  async getAllProducts(
+    id: string | Types.ObjectId,
+    queryData: { page?: number; limit?: number } = {},
+  ): Promise<{ data: Products[]; total: number }> {
+    const { page = 1, limit = 10 } = queryData;
+    const skip = (page - 1) * limit;
+    const [data, total] = await Promise.all([
+      this.productsModel
+        .find({ organization: new Types.ObjectId(id) })
+        .populate('category')
+        .skip(skip)
+        .limit(limit)
+        .sort({ createdAt: -1 }),
+      this.productsModel.countDocuments({
+        organization: new Types.ObjectId(id),
+      }),
+    ]);
+    return { data, total };
   }
 
   async getProductById(data: {
@@ -129,10 +168,22 @@ export class StorefrontService {
 
   async getAllCategories(
     organizationId: string | Types.ObjectId,
-  ): Promise<ProductCategory[] | []> {
-    return await this.productCategoryModel.find({
-      organization: new Types.ObjectId(organizationId),
-    });
+    queryData: { page?: number; limit?: number } = {},
+  ): Promise<{ data: ProductCategory[]; total: number }> {
+    const { page = 1, limit = 10 } = queryData;
+
+    const skip = (page - 1) * limit;
+    const [data, total] = await Promise.all([
+      this.productCategoryModel
+        .find({ organization: new Types.ObjectId(organizationId) })
+        .skip(skip)
+        .limit(limit)
+        .sort({ createdAt: -1 }),
+      this.productCategoryModel.countDocuments({
+        organization: new Types.ObjectId(organizationId),
+      }),
+    ]);
+    return { data, total };
   }
 
   async getCategoryById(data: {

@@ -1,0 +1,54 @@
+<div class="sidebar">
+    <div class="logo">S</div>
+    <nav>
+        <a href="/dashboard" id="nav-overview">
+            <iconify-icon icon="lucide:layout-dashboard"></iconify-icon>
+            Overview
+        </a>
+        <a href="/dashboard/wallets" id="nav-wallets">
+            <iconify-icon icon="lucide:wallet"></iconify-icon>
+            Wallets
+        </a>
+        <a href="/dashboard/products" id="nav-products">
+            <iconify-icon icon="lucide:package"></iconify-icon>
+            Products
+        </a>
+        <a href="/dashboard/categories" id="nav-categories">
+            <iconify-icon icon="lucide:folder-tree"></iconify-icon>
+            Categories
+        </a>
+        <a href="/dashboard/storefront" id="nav-storefront">
+            <iconify-icon icon="lucide:store"></iconify-icon>
+            Storefront
+        </a>
+    </nav>
+    <div class="sidebar-footer">
+        <a href="/dashboard/login">
+            <iconify-icon icon="lucide:log-out"></iconify-icon>
+            Logout
+        </a>
+    </div>
+</div>
+
+<style>
+    .sidebar nav a iconify-icon {
+        font-size: 20px;
+    }
+</style>
+
+<script>
+    // Simple script to highlight active nav item based on URL
+    document.addEventListener('DOMContentLoaded', () => {
+        const path = window.location.pathname;
+        const navLinks = document.querySelectorAll('.sidebar nav a');
+        
+        navLinks.forEach(link => {
+            const href = link.getAttribute('href');
+            if (path === href || (href !== '/dashboard' && path.startsWith(href))) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+    });
+</script>

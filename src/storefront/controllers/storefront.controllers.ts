@@ -17,22 +17,36 @@ import csv = require('csv-parser');
 import { Readable } from 'stream';
 import { ZodValidationPipe } from 'nestjs-zod';
 import { StorefrontService } from '../storefront.service';
-import { CreateProduct, UpdateProductDto } from '../dto/create.storefront.dto';
+import { CreateProduct, UpdateProductDto, UpdateStorefrontDto } from '../dto/create.storefront.dto';
 import { JWTAuthGuard } from 'src/auth/auth.guard';
 import { csvProductSchema } from 'src/csv/dto/csv-product.dto';
 import { Types } from 'mongoose';
 
-@Controller('products')
+@Controller('storefront')
 @UseGuards(JWTAuthGuard)
 export class StorefrontController {
   constructor(private readonly storefrontService: StorefrontService) {}
 
   @Post()
-  createProduct(@Body(new ZodValidationPipe()) productDto: CreateProduct) {
-    return this.storefrontService.createProduct(productDto);
+  createStorefront(@Body(new ZodValidationPipe()) storefrontDto: UpdateStorefrontDto, @Req() req: any) {
+    return this.storefrontService.updateOrCreateStorefront(new Types.ObjectId(req.organization._id), storefrontDto);
   }
 
-  @Post('csv/upload')
+  @Get()
+  getStorefront(@Req() req: any) {
+    return this.storefrontService.getStorefront(new Types.ObjectId(req.organization._id));
+  }
+
+  @Post('products')
+  createProduct(@Body(new ZodValidationPipe()) productDto: CreateProduct, @Req() req: any) {
+    // const image = Image
+    return this.storefrontService.createProduct({
+      ...productDto, 
+      organization: new Types.ObjectId(req.organization._id)
+    });
+  }
+
+  @Post('products/csv-upload')
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(@UploadedFile() file: Express.Multer.File, @Req() req: any) {
     if (!file) {
@@ -119,7 +133,7 @@ export class StorefrontController {
     return this.storefrontService.getAllProducts(organizationId);
   }
 
-  @Get(':id')
+  @Get('products/:id')
   getProductById(@Param('id') id: string, @Req() req: any) {
     return this.storefrontService.getProductById({
       organizationId: req.organization._id,
@@ -127,7 +141,7 @@ export class StorefrontController {
     });
   }
 
-  @Put(':id')
+  @Put('products/:id')
   updateProduct(
     @Param('id') id: string,
     @Body(new ZodValidationPipe()) productDto: UpdateProductDto,
@@ -142,7 +156,7 @@ export class StorefrontController {
     );
   }
 
-  @Delete(':id')
+  @Delete('products/:id')
   deleteProduct(@Param('id') id: string, @Req() req: any) {
     return this.storefrontService.deleteProduct({
       productId: id,
