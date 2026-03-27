@@ -21,15 +21,42 @@
   <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+# Sprite Backend
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Sprite is a comprehensive payment and storefront orchestration platform. It enables businesses to manage storefronts, process payments across multiple providers (including Interswitch and various blockchain networks like Algorand and Tron), and handle organizational finances through a centralized dashboard.
+
+## Live Application
+The live backend API is available at: [https://sprite-4iui.onrender.com/](https://sprite-4iui.onrender.com/)
+
+[Nest](https://github.com/nestjs/nest) framework TypeScript repository.
 
 ## Project setup
 
 ```bash
 $ npm install
 ```
+
+## Environment Variables
+
+To run this project, you will need to add the following environment variables to your `.env` file. You can find a template in `.env.example`.
+
+### Database & Core Security
+*   `MONGODB_URI`: The connection string for your MongoDB database.
+*   `ACCESS_TOKEN_SECRET`: A secret key used to sign and verify JWT tokens.
+
+### Interswitch Credentials (Fiat Payments)
+*   `INTERSWITCH_CLIENT_ID` & `INTERSWITCH_CLIENT_SECRET`: OAuth2 credentials for Interswitch Passport.
+*   `INTERSWITCH_MERCHANT_CODE`: Your unique business identifier on Interswitch.
+*   `INTERSWITCH_BASE_URL`: The API endpoint (Sandbox or Production).
+*   `INTERSWITCH_PAYABLE_CODE`: Identifier for the specific bill/service for payments.
+
+### Frontend & Storefront Routing
+*   `SPRITE_PAYMENT_FE_URL`: The URL of the payment checkout frontend.
+*   `STOREFRONT_URL`: The base URL for the merchant storefront application.
+
+### Cloudinary Setup (Image Hosting)
+*   `CLOUDINARY_CLOUD_NAME`: Your Cloudinary cloud identifier.
+*   `CLOUDINARY_API_KEY` & `CLOUDINARY_API_SECRET`: Credentials for programmatically managing images.
 
 ## Compile and run the project
 
