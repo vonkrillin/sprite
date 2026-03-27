@@ -32,9 +32,9 @@ export class StorefrontController {
     return this.storefrontService.updateOrCreateStorefront(new Types.ObjectId(req.organization._id), storefrontDto);
   }
 
-  @Get()
-  getStorefront(@Req() req: any) {
-    return this.storefrontService.getStorefront(new Types.ObjectId(req.organization._id));
+  @Get(':id')
+  getStorefront(@Param('id') id: string, @Req() req: any) {
+    return this.storefrontService.getStorefront(new Types.ObjectId(id));
   }
 
   @Post('products')

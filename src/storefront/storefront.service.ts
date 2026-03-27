@@ -25,10 +25,8 @@ export class StorefrontService {
     private storefrontModel: Model<Storefront>,
   ) {}
 
-  async getStorefront(organizationId: string | Types.ObjectId): Promise<Storefront> {
-    const storefront = await this.storefrontModel.findOne({
-      organization: new Types.ObjectId(organizationId),
-    }).populate('organization');
+  async getStorefront(storeId: string | Types.ObjectId): Promise<Storefront> {
+    const storefront = await this.storefrontModel.findById(storeId).populate('organization');
     
     if (!storefront) {
       throw new NotFoundException('Storefront not found');
