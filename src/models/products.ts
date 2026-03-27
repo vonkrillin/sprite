@@ -18,6 +18,9 @@ export class Products extends Document {
   @Prop({ type: Types.ObjectId, ref: 'ProductCategory', default: [] })
   category: Types.ObjectId;
 
+  @Prop({ type: Types.ObjectId, ref: 'Organization' })
+  organization: Types.ObjectId;
+
   @Prop({ required: true, enum: Object.values(WalletCurrencyEnum) })
   currency: WalletCurrencyEnum;
 
@@ -37,6 +40,9 @@ export class ProductCategory extends Document {
   @Prop({ required: true, unique: true })
   name: string;
 
+  @Prop({ type: Types.ObjectId, ref: 'Organization', required: true })
+  organization: Types.ObjectId;
+
   @Prop()
   description: string;
 
@@ -46,3 +52,4 @@ export class ProductCategory extends Document {
 
 export const ProductCategorySchema =
   SchemaFactory.createForClass(ProductCategory);
+

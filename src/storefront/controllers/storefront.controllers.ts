@@ -10,6 +10,7 @@ import {
   UploadedFile,
   UseInterceptors,
   BadRequestException,
+  Req,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import csv = require('csv-parser');
@@ -19,6 +20,7 @@ import { StorefrontService } from '../storefront.service';
 import { CreateProduct, UpdateProductDto } from '../dto/create.storefront.dto';
 import { JWTAuthGuard } from 'src/auth/auth.guard';
 import { csvProductSchema } from 'src/csv/dto/csv-product.dto';
+import { Types } from 'mongoose';
 
 @Controller('products')
 @UseGuards(JWTAuthGuard)
@@ -32,7 +34,7 @@ export class StorefrontController {
 
   @Post('csv/upload')
   @UseInterceptors(FileInterceptor('file'))
-  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+  async uploadFile(@UploadedFile() file: Express.Multer.File, @Req() req: any) {
     if (!file) {
       throw new BadRequestException('No file uploaded');
     }
@@ -82,13 +84,16 @@ export class StorefrontController {
         .filter((c): c is string => !!c);
 
       // 2. Resolve category names to ObjectIds (find existing or create new)
-      const categoryMap =
-        await this.storefrontService.resolveCategoryIds(categoryNames);
+      const categoryMap = await this.storefrontService.resolveCategoryIds(
+        categoryNames,
+        req.organization._id,
+      );
 
       // 3. Map the product data to use their resolved category ObjectIds
       const productsToSave = parsedData.map((p) => ({
         ...p,
         category: p.category ? categoryMap[p.category.trim()] : undefined,
+        organization: new Types.ObjectId(req.organization._id),
       }));
 
       // 4. Bulk insert products into the database
@@ -109,25 +114,39 @@ export class StorefrontController {
   }
 
   @Get()
-  getAllProducts() {
-    return this.storefrontService.getAllProducts();
+  getAllProducts(@Req() req: any) {
+    const organizationId = req.organization._id;
+    return this.storefrontService.getAllProducts(organizationId);
   }
 
   @Get(':id')
-  getProductById(@Param('id') id: string) {
-    return this.storefrontService.getProductById(id);
+  getProductById(@Param('id') id: string, @Req() req: any) {
+    return this.storefrontService.getProductById({
+      organizationId: req.organization._id,
+      productId: id,
+    });
   }
 
   @Put(':id')
   updateProduct(
     @Param('id') id: string,
     @Body(new ZodValidationPipe()) productDto: UpdateProductDto,
+    @Req() req: any,
   ) {
-    return this.storefrontService.updateProduct(id, productDto);
+    return this.storefrontService.updateProduct(
+      {
+        organizationId: req.organization._id,
+        productId: id,
+      },
+      productDto,
+    );
   }
 
   @Delete(':id')
-  deleteProduct(@Param('id') id: string) {
-    return this.storefrontService.deleteProduct(id);
+  deleteProduct(@Param('id') id: string, @Req() req: any) {
+    return this.storefrontService.deleteProduct({
+      productId: id,
+      organizationId: req.organization._id,
+    });
   }
 }

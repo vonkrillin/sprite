@@ -7,6 +7,7 @@ import {
   Put,
   Body,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { ZodValidationPipe } from 'nestjs-zod';
 import { StorefrontService } from '../storefront.service';
@@ -24,30 +25,44 @@ export class CategoriesController {
   @Post()
   createCategory(
     @Body(new ZodValidationPipe()) categoryDto: ProductCategoryDto,
+    @Req() req: any,
   ) {
-    return this.storefrontService.createCategory(categoryDto);
+    return this.storefrontService.createCategory(
+      categoryDto,
+      req.organization._id,
+    );
   }
 
   @Get()
-  getAllCategories() {
-    return this.storefrontService.getAllCategories();
+  getAllCategories(@Req() req: any) {
+    return this.storefrontService.getAllCategories(req.organization._id);
   }
 
   @Get(':id')
-  getCategoryById(@Param('id') id: string) {
-    return this.storefrontService.getCategoryById(id);
+  getCategoryById(@Param('id') id: string, @Req() req: any) {
+    return this.storefrontService.getCategoryById({
+      id,
+      organizationId: req.organization._id,
+    });
   }
 
   @Put(':id')
   updateCategory(
     @Param('id') id: string,
     @Body(new ZodValidationPipe()) categoryDto: UpdateProductCategoryDto,
+    @Req() req: any,
   ) {
-    return this.storefrontService.updateCategory(id, categoryDto);
+    return this.storefrontService.updateCategory(
+      { id, organizationId: req.organization._id },
+      categoryDto,
+    );
   }
 
   @Delete(':id')
-  deleteCategory(@Param('id') id: string) {
-    return this.storefrontService.deleteCategory(id);
+  deleteCategory(@Param('id') id: string, @Req() req: any) {
+    return this.storefrontService.deleteCategory({
+      id,
+      organizationId: req.organization._id,
+    });
   }
 }

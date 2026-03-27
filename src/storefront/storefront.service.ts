@@ -31,12 +31,22 @@ export class StorefrontService {
     return result;
   }
 
-  async getAllProducts(): Promise<Products[] | []> {
-    return await this.productsModel.find().populate('category');
+  async getAllProducts(id: string | Types.ObjectId): Promise<Products[] | []> {
+    return await this.productsModel
+      .find({ organization: new Types.ObjectId(id) })
+      .populate('category');
   }
 
-  async getProductById(id: string | Types.ObjectId): Promise<Products> {
-    const product = await this.productsModel.findById(id).populate('category');
+  async getProductById(data: {
+    organizationId: string;
+    productId: string;
+  }): Promise<Products> {
+    const product = await this.productsModel
+      .findById({
+        organization: new Types.ObjectId(data.organizationId),
+        _id: new Types.ObjectId(data.productId),
+      })
+      .populate('category');
     if (!product) {
       throw new NotFoundException('Product not found');
     }
@@ -44,11 +54,14 @@ export class StorefrontService {
   }
 
   async updateProduct(
-    id: string | Types.ObjectId,
+    data: { organizationId: string; productId: string },
     productDto: UpdateProductDto,
   ): Promise<Products> {
-    const product = await this.productsModel.findByIdAndUpdate(
-      id,
+    const product = await this.productsModel.findOneAndUpdate(
+      {
+        organization: new Types.ObjectId(data.organizationId),
+        _id: new Types.ObjectId(data.productId),
+      },
       { $set: productDto },
       { new: true },
     );
@@ -58,8 +71,14 @@ export class StorefrontService {
     return product;
   }
 
-  async deleteProduct(id: string | Types.ObjectId): Promise<any> {
-    const product = await this.productsModel.findByIdAndDelete(id);
+  async deleteProduct(data: {
+    organizationId: string;
+    productId: string;
+  }): Promise<any> {
+    const product = await this.productsModel.findOneAndDelete({
+      _id: new Types.ObjectId(data.productId),
+      organization: data.organizationId,
+    });
     if (!product) {
       throw new NotFoundException('Product not found');
     }
@@ -69,9 +88,13 @@ export class StorefrontService {
   // Category Operations
   async createCategory(
     categoryDto: ProductCategoryDto,
+    organizationId: string | Types.ObjectId,
   ): Promise<ProductCategory> {
     try {
-      return await this.productCategoryModel.create(categoryDto);
+      return await this.productCategoryModel.create({
+        ...categoryDto,
+        organization: new Types.ObjectId(organizationId),
+      });
     } catch (error) {
       if (error.code === 11000) {
         throw new ConflictException('Category already exists');
@@ -82,14 +105,21 @@ export class StorefrontService {
 
   async resolveCategoryIds(
     categoryNames: string[],
+    organizationId: string | Types.ObjectId,
   ): Promise<Record<string, Types.ObjectId>> {
     const uniqueNames = [...new Set(categoryNames.filter(Boolean))];
     const categoryMap: Record<string, Types.ObjectId> = {};
 
     for (const name of uniqueNames) {
-      let category = await this.productCategoryModel.findOne({ name });
+      let category = await this.productCategoryModel.findOne({
+        name,
+        organization: new Types.ObjectId(organizationId),
+      });
       if (!category) {
-        category = await this.productCategoryModel.create({ name });
+        category = await this.productCategoryModel.create({
+          name,
+          organization: new Types.ObjectId(organizationId),
+        });
       }
       categoryMap[name] = category._id as Types.ObjectId;
     }
@@ -97,12 +127,22 @@ export class StorefrontService {
     return categoryMap;
   }
 
-  async getAllCategories(): Promise<ProductCategory[] | []> {
-    return await this.productCategoryModel.find();
+  async getAllCategories(
+    organizationId: string | Types.ObjectId,
+  ): Promise<ProductCategory[] | []> {
+    return await this.productCategoryModel.find({
+      organization: new Types.ObjectId(organizationId),
+    });
   }
 
-  async getCategoryById(id: string | Types.ObjectId): Promise<ProductCategory> {
-    const category = await this.productCategoryModel.findById(id);
+  async getCategoryById(data: {
+    id: string | Types.ObjectId;
+    organizationId: string | Types.ObjectId;
+  }): Promise<ProductCategory> {
+    const category = await this.productCategoryModel.findOne({
+      _id: new Types.ObjectId(data.id),
+      organization: new Types.ObjectId(data.organizationId),
+    });
     if (!category) {
       throw new NotFoundException('Category not found');
     }
@@ -110,11 +150,17 @@ export class StorefrontService {
   }
 
   async updateCategory(
-    id: string | Types.ObjectId,
+    data: {
+      id: string | Types.ObjectId;
+      organizationId: string | Types.ObjectId;
+    },
     categoryDto: UpdateProductCategoryDto,
   ): Promise<ProductCategory> {
-    const category = await this.productCategoryModel.findByIdAndUpdate(
-      id,
+    const category = await this.productCategoryModel.findOneAndUpdate(
+      {
+        _id: new Types.ObjectId(data.id),
+        organization: new Types.ObjectId(data.organizationId),
+      },
       { $set: categoryDto },
       { new: true },
     );
@@ -124,8 +170,14 @@ export class StorefrontService {
     return category;
   }
 
-  async deleteCategory(id: string | Types.ObjectId): Promise<any> {
-    const category = await this.productCategoryModel.findByIdAndDelete(id);
+  async deleteCategory(data: {
+    id: string | Types.ObjectId;
+    organizationId: string | Types.ObjectId;
+  }): Promise<any> {
+    const category = await this.productCategoryModel.findOneAndDelete({
+      _id: new Types.ObjectId(data.id),
+      organization: new Types.ObjectId(data.organizationId),
+    });
     if (!category) {
       throw new NotFoundException('Category not found');
     }
