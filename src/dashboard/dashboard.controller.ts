@@ -37,7 +37,7 @@ export class DashboardController {
 
     // Fetch counts and recent data
     const [productsData, categoriesData, wallets] = await Promise.all([
-      this.storefrontService.getAllProducts(organizationId, { page: 1, limit: 5 }),
+      this.storefrontService.getAllProductsByOrgId(organizationId, { page: 1, limit: 5 }),
       this.storefrontService.getAllCategories(organizationId, { page: 1, limit: 1 }),
       this.walletsService.listWallets({ organizationId }),
     ]);

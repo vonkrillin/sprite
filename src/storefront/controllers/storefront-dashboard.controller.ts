@@ -37,7 +37,7 @@ export class StorefrontDashboardController {
         const page = parseInt(pageQuery, 10) || 1;
         const limit = parseInt(limitQuery, 10) || 10;
         const organizationId = req.organization._id;
-        const { data, total } = await this.storefrontService.getAllProducts(
+        const { data, total } = await this.storefrontService.getAllProductsByOrgId(
             organizationId,
             {
                 page,

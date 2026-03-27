@@ -54,6 +54,27 @@ export class StorefrontService {
     return result;
   }
 
+  async getAllProductsByOrgId(
+    organizationId: string | Types.ObjectId,
+    queryData: { page?: number; limit?: number } = {},
+  ): Promise<{ data: Products[]; total: number }> {
+    const { page = 1, limit = 10 } = queryData;
+    const skip = (page - 1) * limit;
+    
+    const [data, total] = await Promise.all([
+      this.productsModel
+        .find({ organization: new Types.ObjectId(organizationId) })
+        .populate('category')
+        .skip(skip)
+        .limit(limit)
+        .sort({ createdAt: -1 }),
+      this.productsModel.countDocuments({
+        organization: new Types.ObjectId(organizationId),
+      }),
+    ]);
+    return { data, total };
+  }
+
   async getAllProducts(
     storeId: string | Types.ObjectId,
     queryData: { page?: number; limit?: number } = {},
