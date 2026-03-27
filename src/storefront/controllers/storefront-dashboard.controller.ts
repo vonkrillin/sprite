@@ -8,7 +8,11 @@ import {
     UseGuards,
     Req,
     Query,
+    UseInterceptors,
+    UploadedFiles,
 } from '@nestjs/common';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { uploadBuffer } from '../../utils/cloudinary';
 import { StorefrontService } from '../storefront.service';
 import {
     CreateProduct,
@@ -75,15 +79,34 @@ export class StorefrontDashboardController {
     }
 
     @Post('products/create')
+    @UseInterceptors(FilesInterceptor('images'))
     async postCreateProduct(
-        @Body() productDto: CreateProduct,
+        @UploadedFiles() files: Express.Multer.File[],
+        @Body() productDto: any,
         @Req() req: any,
         @Res() res: Response,
     ) {
         try {
             const organizationId = req.organization._id;
+
+            // Upload images to Cloudinary
+            const imageUrls: string[] = [];
+            if (files && files.length > 0) {
+                for (const file of files) {
+                    const result = await uploadBuffer(file.buffer);
+                    imageUrls.push(result.secure_url);
+                }
+            }
+
+            // Convert numeric fields if they are strings (typical for multipart/form-data)
+            const price = typeof productDto.price === 'string' ? parseFloat(productDto.price) : productDto.price;
+            const quantity = typeof productDto.quantity === 'string' ? parseInt(productDto.quantity, 10) : productDto.quantity;
+
             await this.storefrontService.createProduct({
                 ...productDto,
+                price: isNaN(price) ? 0 : price,
+                quantity: isNaN(quantity) ? 0 : quantity,
+                images: imageUrls,
                 organization: organizationId,
             } as any);
             return res.redirect('/dashboard/products');
