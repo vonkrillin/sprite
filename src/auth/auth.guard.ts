@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
+import { Types } from 'mongoose';
 
 // Role Enum for RBAC implementation
 export enum Role {
@@ -33,7 +34,10 @@ export class JWTAuthGuard implements CanActivate {
 
       // Attaches the organization to the context request object
       // so it can be accessed in route handlers
-      request['organization'] = payload;
+      request['organization'] = {
+        ...payload,
+        _id: new Types.ObjectId(payload._id)
+      };
     } catch {
       throw new UnauthorizedException('Invalid or expired token');
     }
@@ -67,7 +71,10 @@ export class CookieSSRGuard implements CanActivate {
         secret: process.env.ACCESS_TOKEN_SECRET,
       });
 
-      request['organization'] = payload;
+      request['organization'] = {
+        ...payload,
+        _id: new Types.ObjectId(payload._id)
+      };
       return true;
     } catch {
       response.redirect('/dashboard/login');
