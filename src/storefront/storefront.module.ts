@@ -6,6 +6,7 @@ import {
   ProductSchema,
   ProductCategorySchema,
 } from 'src/models/products';
+import { Storefront, StorefrontSchema } from 'src/models/storefront';
 import { StorefrontService } from './storefront.service';
 import { StorefrontController } from './controllers/storefront.controllers';
 import { CategoriesController } from './controllers/categories.controller';
@@ -18,6 +19,10 @@ import { StorefrontDashboardController } from './controllers/storefront-dashboar
       {
         name: ProductCategory.name,
         schema: ProductCategorySchema,
+      },
+      {
+        name: Storefront.name,
+        schema: StorefrontSchema,
       },
     ]),
   ],

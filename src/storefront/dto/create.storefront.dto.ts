@@ -26,3 +26,13 @@ export class CreateProduct extends createZodDto(createProductDto) {}
 export class UpdateProductDto extends createZodDto(updateProductDto) {}
 export class ProductCategoryDto extends createZodDto(categoryDto) {}
 export class UpdateProductCategoryDto extends createZodDto(updateCategoryDto) {}
+
+export const storefrontSettingsDto = z.object({
+  name: z.string().min(3),
+  contactAddress: z.string().optional(),
+  phone: z.string().optional(),
+  about: z.string().optional(),
+  contactEmail: z.string().email().optional(),
+});
+
+export class UpdateStorefrontDto extends createZodDto(storefrontSettingsDto) {}
