@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { WalletModule } from './wallets/wallet.module';
 import { PaymentModule } from './payments/payment.module';
 import { StorefrontModule } from './storefront/storefront.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { StorefrontModule } from './storefront/storefront.module';
     WalletModule,
     PaymentModule,
     StorefrontModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [AppService],
