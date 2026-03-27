@@ -1,0 +1,222 @@
+<header>
+    <h1>Categories</h1>
+    <div class="actions">
+        <a href="/dashboard/categories/create" class="add-button">
+            <iconify-icon icon="lucide:plus"></iconify-icon>
+            New Category
+        </a>
+    </div>
+</header>
+
+<section class="categories-table-container glass-effect">
+    <table class="categories-table">
+        <thead>
+            <tr>
+                <th>Category Name</th>
+                <th>Description</th>
+                <th class="text-right">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each categories}}
+            <tr>
+                <td>
+                    <div class="category-info">
+                        <div class="category-name">{{this.name}}</div>
+                    </div>
+                </td>
+                <td>{{this.description}}</td>
+                <td class="text-right">
+                    <button class="icon-button" title="Edit Category">
+                        <iconify-icon icon="lucide:pencil"></iconify-icon>
+                    </button>
+                    <button class="icon-button delete" title="Delete Category">
+                        <iconify-icon icon="lucide:trash-2"></iconify-icon>
+                    </button>
+                </td>
+            </tr>
+            {{else}}
+            <tr>
+                <td colspan="3" class="empty-state">
+                    <iconify-icon icon="lucide:folder-x" style="font-size: 48px; margin-bottom: 24px; opacity: 0.5;"></iconify-icon>
+                    <p>No categories found. <a href="/dashboard/categories/create">Create your first category.</a></p>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+
+    {{#if pagination.totalPages}}
+    <div class="pagination-footer">
+        <div class="pagination-info">
+            Showing page {{pagination.page}} of {{pagination.totalPages}} ({{pagination.total}} total)
+        </div>
+        <div class="pagination-actions">
+            {{#if pagination.hasPrev}}
+            <a href="/dashboard/categories?page={{pagination.prevPage}}" class="pagination-btn">
+                <iconify-icon icon="lucide:chevron-left"></iconify-icon>
+                Previous
+            </a>
+            {{else}}
+            <span class="pagination-btn disabled">
+                <iconify-icon icon="lucide:chevron-left"></iconify-icon>
+                Previous
+            </span>
+            {{/if}}
+
+            {{#if pagination.hasNext}}
+            <a href="/dashboard/categories?page={{pagination.nextPage}}" class="pagination-btn">
+                Next
+                <iconify-icon icon="lucide:chevron-right"></iconify-icon>
+            </a>
+            {{else}}
+            <span class="pagination-btn disabled">
+                Next
+                <iconify-icon icon="lucide:chevron-right"></iconify-icon>
+            </span>
+            {{/if}}
+        </div>
+    </div>
+    {{/if}}
+</section>
+
+<style>
+    .add-button {
+        background: var(--primary);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+    }
+
+    .add-button:hover {
+        background: var(--primary-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(99, 102, 241, 0.3);
+    }
+
+    .categories-table-container {
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+    }
+
+    .categories-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+    }
+
+    .categories-table th {
+        text-align: left;
+        padding: 16px 24px;
+        background: #f8fafc;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .categories-table td {
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--border);
+        font-size: 15px;
+    }
+
+    .category-name {
+        font-weight: 600;
+        color: var(--text-main);
+    }
+
+    .text-right { text-align: right; }
+
+    .icon-button {
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 8px;
+        transition: all 0.2s;
+        display: inline-flex;
+        font-size: 18px;
+    }
+
+    .icon-button:hover {
+        background: #f1f5f9;
+        color: var(--primary);
+    }
+
+    .icon-button.delete:hover {
+        color: #ef4444;
+        background: #fef2f2;
+    }
+
+    .empty-state {
+        text-align: center;
+        color: var(--text-muted);
+        padding: 60px !important;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .empty-state a {
+        color: var(--primary);
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .pagination-footer {
+        padding: 20px 24px;
+        background: #f8fafc;
+        border-top: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .pagination-info {
+        font-size: 14px;
+        color: var(--text-muted);
+    }
+
+    .pagination-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .pagination-btn {
+        padding: 8px 16px;
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-main);
+        text-decoration: none;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .pagination-btn:hover:not(.disabled) {
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+
+    .pagination-btn.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background: #f1f5f9;
+    }
+</style>

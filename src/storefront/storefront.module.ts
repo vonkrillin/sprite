@@ -9,6 +9,8 @@ import {
 import { StorefrontService } from './storefront.service';
 import { StorefrontController } from './controllers/storefront.controllers';
 import { CategoriesController } from './controllers/categories.controller';
+import { StorefrontDashboardController } from './controllers/storefront-dashboard.controller';
+
 @Module({
   imports: [
     MongooseModule.forFeature([
@@ -19,7 +21,11 @@ import { CategoriesController } from './controllers/categories.controller';
       },
     ]),
   ],
-  controllers: [StorefrontController, CategoriesController],
+  controllers: [
+    StorefrontController,
+    CategoriesController,
+    StorefrontDashboardController,
+  ],
   providers: [StorefrontService],
   exports: [StorefrontService],
 })

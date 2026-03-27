@@ -1,0 +1,239 @@
+<header>
+    <h1>Products</h1>
+    <div class="actions">
+        <a href="/dashboard/products/create" class="add-button">
+            <iconify-icon icon="lucide:plus"></iconify-icon>
+            New Product
+        </a>
+    </div>
+</header>
+
+<section class="products-table-container glass-effect">
+    <table class="products-table">
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th class="text-right">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each products}}
+            <tr>
+                <td>
+                    <div class="product-info">
+                        <div class="product-name">{{this.productName}}</div>
+                    </div>
+                </td>
+                <td>
+                    <span class="category-badge">{{this.category.name}}</span>
+                </td>
+                <td class="price">{{formatCurrency this.price this.currency}}</td>
+                <td>{{this.quantity}} in stock</td>
+                <td class="text-right">
+                    <button class="icon-button" title="Edit Product">
+                        <iconify-icon icon="lucide:pencil"></iconify-icon>
+                    </button>
+                    <button class="icon-button delete" title="Delete Product">
+                        <iconify-icon icon="lucide:trash-2"></iconify-icon>
+                    </button>
+                </td>
+            </tr>
+            {{else}}
+            <tr>
+                <td colspan="5" class="empty-state">
+                    <iconify-icon icon="lucide:package-open" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;"></iconify-icon>
+                    <p>No products found. <a href="/dashboard/products/create">Create your first product.</a></p>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+
+    {{#if pagination.totalPages}}
+    <div class="pagination-footer">
+        <div class="pagination-info">
+            Showing page {{pagination.page}} of {{pagination.totalPages}} ({{pagination.total}} total)
+        </div>
+        <div class="pagination-actions">
+            {{#if pagination.hasPrev}}
+            <a href="/dashboard/products?page={{pagination.prevPage}}" class="pagination-btn">
+                <iconify-icon icon="lucide:chevron-left"></iconify-icon>
+                Previous
+            </a>
+            {{else}}
+            <span class="pagination-btn disabled">
+                <iconify-icon icon="lucide:chevron-left"></iconify-icon>
+                Previous
+            </span>
+            {{/if}}
+
+            {{#if pagination.hasNext}}
+            <a href="/dashboard/products?page={{pagination.nextPage}}" class="pagination-btn">
+                Next
+                <iconify-icon icon="lucide:chevron-right"></iconify-icon>
+            </a>
+            {{else}}
+            <span class="pagination-btn disabled">
+                Next
+                <iconify-icon icon="lucide:chevron-right"></iconify-icon>
+            </span>
+            {{/if}}
+        </div>
+    </div>
+    {{/if}}
+</section>
+
+<style>
+    .add-button {
+        background: var(--primary);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+    }
+
+    .add-button:hover {
+        background: var(--primary-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(99, 102, 241, 0.3);
+    }
+
+    .products-table-container {
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+    }
+
+    .products-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+    }
+
+    .products-table th {
+        text-align: left;
+        padding: 16px 24px;
+        background: #f8fafc;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .products-table td {
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--border);
+        font-size: 15px;
+    }
+
+    .product-name {
+        font-weight: 600;
+        color: var(--text-main);
+    }
+
+    .category-badge {
+        padding: 6px 12px;
+        background: #f1f5f9;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--text-muted);
+    }
+
+    .price {
+        font-weight: 600;
+        color: var(--text-main);
+    }
+
+    .text-right { text-align: right; }
+
+    .icon-button {
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 8px;
+        transition: all 0.2s;
+        font-size: 18px;
+        display: inline-flex;
+    }
+
+    .icon-button:hover {
+        background: #f1f5f9;
+        color: var(--primary);
+    }
+
+    .icon-button.delete:hover {
+        color: #ef4444;
+        background: #fef2f2;
+    }
+
+    .empty-state {
+        text-align: center;
+        color: var(--text-muted);
+        padding: 60px !important;
+    }
+
+    .empty-state a {
+        color: var(--primary);
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .pagination-footer {
+        padding: 20px 24px;
+        background: #f8fafc;
+        border-top: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .pagination-info {
+        font-size: 14px;
+        color: var(--text-muted);
+    }
+
+    .pagination-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .pagination-btn {
+        padding: 8px 16px;
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-main);
+        text-decoration: none;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .pagination-btn:hover:not(.disabled) {
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+
+    .pagination-btn.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background: #f1f5f9;
+    }
+</style>

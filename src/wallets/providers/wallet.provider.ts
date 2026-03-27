@@ -21,7 +21,7 @@ export class WalletProviderFactory extends AbstractWalletProviderFactory {
             case WalletProviderEnum.TRON:
                 return this.tronWalletProvider;
             default:
-                throw new NotImplementedException(`Unsupported wallet type: ${walletType}`);
+                throw new NotImplementedException(`${walletType} wallet features are not available yet. Coming Soon!`);
         }
     }
 }

@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Post, Req, UseGuards } from "@nestjs/common";
-import { WalletsService } from "./wallets.service";
+import { WalletsService } from "../wallets.service";
 import { ZodValidationPipe } from "nestjs-zod";
-import { createWalletSchema, type CreateWalletDto } from "./dto/create-wallet.dto";
-import { JWTAuthGuard } from "../auth/auth.guard";
+import { createWalletSchema, type CreateWalletDto } from "../dto/create-wallet.dto";
+import { JWTAuthGuard } from "../../auth/auth.guard";
 
 
 @Controller('wallets')

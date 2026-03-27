@@ -28,8 +28,12 @@ export class StorefrontController {
   constructor(private readonly storefrontService: StorefrontService) {}
 
   @Post()
-  createProduct(@Body(new ZodValidationPipe()) productDto: CreateProduct) {
-    return this.storefrontService.createProduct(productDto);
+  createProduct(@Body(new ZodValidationPipe()) productDto: CreateProduct, @Req() req: any) {
+    // const image = Image
+    return this.storefrontService.createProduct({
+      ...productDto, 
+      organization: new Types.ObjectId(req.organization._id)
+    });
   }
 
   @Post('csv/upload')

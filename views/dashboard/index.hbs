@@ -1,174 +1,94 @@
-<div class="dashboard-container">
-    <div class="sidebar">
-        <div class="logo">S</div>
-        <nav>
-            <a href="/dashboard" class="active">Overview</a>
-            <a href="#">Organizations</a>
-            <a href="#">Wallets</a>
-            <a href="#">Settings</a>
-        </nav>
-        <div class="sidebar-footer">
-            <a href="/dashboard/login">Logout</a>
+<header>
+    <h1>Overview</h1>
+    <div class="user-profile">
+        <div class="avatar">
+            <iconify-icon icon="lucide:user"></iconify-icon>
+        </div>
+        <span>{{#if organization}}{{organization.name}}{{else}}Welcome back!{{/if}}</span>
+    </div>
+</header>
+
+<section class="stats-grid">
+    <div class="stat-card glass-effect">
+        <div class="stat-header">
+            <h3>Total Products</h3>
+            <iconify-icon icon="lucide:box" class="stat-icon"></iconify-icon>
+        </div>
+        <div class="value">{{stats.totalProducts}}</div>
+        <div class="trend">Manage inventory</div>
+    </div>
+    <div class="stat-card glass-effect">
+        <div class="stat-header">
+            <h3>Product Categories</h3>
+            <iconify-icon icon="lucide:folder-tree" class="stat-icon"></iconify-icon>
+        </div>
+        <div class="value">{{stats.totalCategories}}</div>
+        <div class="trend">Browse taxonomies</div>
+    </div>
+    <div class="stat-card glass-effect">
+        <div class="stat-header">
+            <h3>Active Wallets</h3>
+            <iconify-icon icon="lucide:wallet-cards" class="stat-icon"></iconify-icon>
+        </div>
+        <div class="value">{{stats.totalWallets}}</div>
+        <div class="trend">Manage crypto assets</div>
+    </div>
+</section>
+
+<section class="recent-activity-container">
+    <div class="recent-section glass-effect">
+        <h2>Recently Added Products</h2>
+        <div class="activity-list">
+            {{#each recentProducts}}
+            <div class="activity-item">
+                <div class="icon-box">
+                    <iconify-icon icon="lucide:package"></iconify-icon>
+                </div>
+                <div class="details">
+                    <p class="title">{{this.productName}}</p>
+                    <p class="time">{{this.category.name}} • {{formatCurrency this.price this.currency}}</p>
+                </div>
+            </div>
+            {{else}}
+            <div class="empty-activity">
+                <iconify-icon icon="lucide:package-open" style="font-size: 32px; opacity: 0.5; margin-bottom: 12px;"></iconify-icon>
+                <p>No products added yet. <a href="/dashboard/products/create">Create your first product.</a></p>
+            </div>
+            {{/each}}
         </div>
     </div>
-    
-    <main class="content">
-        <header>
-            <h1>Overview</h1>
-            <div class="user-profile">
-                <div class="avatar">U</div>
-                <span>Welcome back!</span>
-            </div>
-        </header>
 
-        <section class="stats-grid">
-            <div class="stat-card glass-effect">
-                <h3>Total Organizations</h3>
-                <div class="value">124</div>
-                <div class="trend up">+12% from last month</div>
-            </div>
-            <div class="stat-card glass-effect">
-                <h3>Active Transactions</h3>
-                <div class="value">8,432</div>
-                <div class="trend up">+5% from last month</div>
-            </div>
-            <div class="stat-card glass-effect">
-                <h3>Revenue</h3>
-                <div class="value">$42,900</div>
-                <div class="trend down">-2% from last month</div>
-            </div>
-        </section>
-
-        <section class="recent-activity glass-effect">
-            <h2>Recent Activity</h2>
-            <div class="activity-list">
-                <div class="activity-item">
-                    <div class="icon">🚀</div>
-                    <div class="details">
-                        <p class="title">New Organization Onboarded</p>
-                        <p class="time">2 hours ago</p>
-                    </div>
-                </div>
-                <div class="activity-item">
-                    <div class="icon">💰</div>
-                    <div class="details">
-                        <p class="title">Large Transaction Detected</p>
-                        <p class="time">5 hours ago</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-</div>
+    <div class="quick-actions glass-effect">
+        <h2>Quick Actions</h2>
+        <div class="action-grid">
+            <a href="/dashboard/products/create" class="action-btn">
+                <iconify-icon icon="lucide:plus-circle" class="btn-icon"></iconify-icon>
+                <span>Add Product</span>
+            </a>
+            <a href="/dashboard/wallets/create" class="action-btn">
+                <iconify-icon icon="lucide:wallet" class="btn-icon"></iconify-icon>
+                <span>New Wallet</span>
+            </a>
+            <a href="/dashboard/categories/create" class="action-btn">
+                <iconify-icon icon="lucide:folder-plus" class="btn-icon"></iconify-icon>
+                <span>New Category</span>
+            </a>
+        </div>
+    </div>
+</section>
 
 <style>
-    .dashboard-container {
-        display: flex;
-        min-height: 100vh;
-        background-color: var(--bg-color);
-    }
-
-    .sidebar {
-        width: 260px;
-        background: var(--white);
-        border-right: 1px solid var(--border);
-        padding: 32px 24px;
-        display: flex;
-        flex-direction: column;
-        position: sticky;
-        top: 0;
-        height: 100vh;
-    }
-
-    .sidebar .logo {
-        width: 40px;
-        height: 40px;
-        background: var(--primary);
-        color: white;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-        font-size: 20px;
-        margin-bottom: 48px;
-    }
-
-    .sidebar nav {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .sidebar nav a {
-        padding: 12px 16px;
-        border-radius: 10px;
-        text-decoration: none;
-        color: var(--text-muted);
-        font-weight: 500;
-        transition: all 0.2s ease;
-    }
-
-    .sidebar nav a:hover,
-    .sidebar nav a.active {
-        background: #f1f5f9;
-        color: var(--primary);
-    }
-
-    .sidebar nav a.active {
-        background: #eef2ff;
-        font-weight: 600;
-    }
-
-    .sidebar-footer {
-        margin-top: auto;
-        padding-top: 24px;
-        border-top: 1px solid var(--border);
-    }
-
-    .sidebar-footer a {
-        color: #ef4444;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 14px;
-    }
-
-    .content {
-        flex: 1;
-        padding: 48px;
-        overflow-y: auto;
-    }
-
-    header {
+    .stat-header {
         display: flex;
         justify-content: space-between;
-        align-items: center;
-        margin-bottom: 48px;
+        align-items: flex-start;
+        margin-bottom: 16px;
     }
 
-    header h1 {
-        font-size: 32px;
-        font-weight: 700;
-        letter-spacing: -0.025em;
-    }
-
-    .user-profile {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .avatar {
-        width: 36px;
-        height: 36px;
-        background: #e2e8f0;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 600;
-        color: var(--text-muted);
+    .stat-icon {
+        font-size: 24px;
+        color: var(--primary);
+        opacity: 0.8;
     }
 
     .stats-grid {
@@ -188,7 +108,6 @@
         font-size: 14px;
         font-weight: 600;
         color: var(--text-muted);
-        margin-bottom: 16px;
     }
 
     .stat-card .value {
@@ -200,18 +119,22 @@
     .stat-card .trend {
         font-size: 12px;
         font-weight: 500;
+        color: var(--primary);
     }
 
-    .trend.up { color: #10b981; }
-    .trend.down { color: #ef4444; }
+    .recent-activity-container {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 32px;
+    }
 
-    .recent-activity {
+    .recent-section, .quick-actions {
         padding: 32px;
         border-radius: 24px;
         box-shadow: var(--shadow);
     }
 
-    .recent-activity h2 {
+    .recent-section h2, .quick-actions h2 {
         font-size: 20px;
         font-weight: 700;
         margin-bottom: 24px;
@@ -227,9 +150,15 @@
         display: flex;
         align-items: center;
         gap: 16px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid var(--border);
     }
 
-    .activity-item .icon {
+    .activity-item:last-child {
+        border-bottom: none;
+    }
+
+    .icon-box {
         width: 40px;
         height: 40px;
         background: #f8fafc;
@@ -238,6 +167,7 @@
         align-items: center;
         justify-content: center;
         font-size: 18px;
+        color: var(--primary);
     }
 
     .activity-item .details .title {
@@ -248,5 +178,64 @@
     .activity-item .details .time {
         font-size: 12px;
         color: var(--text-muted);
+    }
+
+    .empty-activity {
+        text-align: center;
+        padding: 40px 0;
+        color: var(--text-muted);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .empty-activity a {
+        color: var(--primary);
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .action-grid {
+        display: grid;
+        gap: 12px;
+    }
+
+    .action-btn {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px;
+        background: #f8fafc;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        text-decoration: none;
+        color: var(--text-main);
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+
+    .btn-icon {
+        font-size: 20px;
+        color: var(--primary);
+    }
+
+    .action-btn:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+        background: white;
+        transform: translateX(4px);
+    }
+
+    .avatar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+    }
+
+    @media (max-width: 1024px) {
+        .recent-activity-container {
+            grid-template-columns: 1fr;
+        }
     }
 </style>
