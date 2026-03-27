@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
+import { WalletCurrencyEnum } from 'src/enums';
 
 @Schema({
   timestamps: true,
@@ -17,8 +18,8 @@ export class Products extends Document {
   @Prop({ type: Types.ObjectId, ref: 'ProductCategory', default: [] })
   category: Types.ObjectId;
 
-  @Prop({ required: true })
-  currency: string;
+  @Prop({ required: true, enum: Object.values(WalletCurrencyEnum) })
+  currency: WalletCurrencyEnum;
 
   @Prop()
   images: string[];
